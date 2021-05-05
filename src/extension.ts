@@ -20,7 +20,7 @@ export const activate = (context: vscode.ExtensionContext) => {
       // Get the active text editor
       const editor = vscode.window.activeTextEditor;
 
-      if (editor) {
+      if (editor !== undefined) {
         const document = editor.document;
         const selection = editor.selection;
 
