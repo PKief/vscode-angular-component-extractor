@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export const activate = (context: vscode.ExtensionContext) => {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
@@ -17,17 +17,23 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
     () => {
-      // The code you place here will be executed every time your command is executed
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
 
-      // Display a message box to the user
-      vscode.window.showInformationMessage(
-        "Hello World from angular-component-extractor!"
-      );
+      if (editor !== undefined) {
+        const document = editor.document;
+        const selection = editor.selection;
+
+        // Get the word within the selection
+        const word = document.getText(selection);
+        // Display a message box to the user
+        vscode.window.showInformationMessage(word);
+      }
     }
   );
 
   context.subscriptions.push(disposable);
-}
+};
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export const deactivate = () => {};
