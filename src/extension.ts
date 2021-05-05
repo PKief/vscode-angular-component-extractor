@@ -18,6 +18,14 @@ export const activate = (context: vscode.ExtensionContext) => {
   let disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
     (): void => {
+      const angularTsc = vscode.extensions.getExtension("angular.ng-template");
+      if (angularTsc === undefined) {
+        console.error(
+          "Angular Language Service is required for this extension"
+        );
+        return;
+      }
+
       const editor = vscode.window.activeTextEditor;
       if (editor === undefined) {
         console.error("no active editor");
