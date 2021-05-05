@@ -1,6 +1,6 @@
 {
-	"name": "angular-extract-components",
-	"displayName": "angular-extract-components",
+	"name": "angular-component-extractor",
+	"displayName": "angular-component-extractor",
 	"description": "Helper to extract components from templates in Angular",
 	"version": "0.0.1",
 	"engines": {
@@ -10,13 +10,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:angular-extract-components.helloWorld"
+		"onCommand:angular-component-extractor.extract-component"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "angular-extract-components.extract-component",
+				"command": "angular-component-extractor.extract-component",
 				"title": "Extract component"
 			}
 		]

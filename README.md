@@ -1,6 +1,6 @@
-# angular-extract-components README
+# angular-component-extractor README
 
-This is the README for your extension "angular-extract-components". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "angular-component-extractor". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
