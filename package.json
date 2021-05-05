@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:angular-component-extractor.extract-component"
+    "onCommand:html"
   ],
   "main": "./dist/extension.js",
   "contributes": {
