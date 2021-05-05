@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { preRunChecks } from "./preRunChecks";
 import { sanityCheck } from "./sanityCheck";
 
 // this method is called when your extension is activated
@@ -18,34 +19,15 @@ export const activate = (context: vscode.ExtensionContext) => {
   let disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
     (): void => {
-      const angularTsc = vscode.extensions.getExtension("angular.ng-template");
-      if (angularTsc === undefined) {
-        console.error(
-          "Angular Language Service is required for this extension"
-        );
-        return;
-      }
-
-      const editor = vscode.window.activeTextEditor;
-      if (editor === undefined) {
-        console.error("no active editor");
-        return;
-      }
-
-      const { document, selection } = editor;
-      const errorsWithinSelection = sanityCheck(
-        vscode.languages.getDiagnostics,
-        document.uri,
-        selection
+      const editor = preRunChecks(
+        vscode.window.activeTextEditor,
+        vscode.extensions.getExtension,
+        vscode.languages.getDiagnostics
       );
-      if (errorsWithinSelection.length > 0) {
-        console.error(
-          "Could not extract a component, because there are errors within the html",
-          errorsWithinSelection
-        );
+      if (editor === undefined) {
         return;
       }
-
+      const { document, selection } = editor;
       const word = document.getText(selection);
       vscode.window.showInformationMessage(word);
     }
