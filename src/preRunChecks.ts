@@ -1,10 +1,12 @@
 import { Diagnostic, Extension, TextEditor, Uri } from "vscode";
 
-export const preRunChecks = (
-  editor: TextEditor | undefined,
+export const preRunChecks = <
+  T extends Pick<TextEditor, "document" | "selection">
+>(
+  editor: T | undefined,
   getExtension: (extensionId: string) => Extension<any> | undefined,
   getDiagnostics: (resource: Uri) => Diagnostic[]
-): TextEditor | undefined => {
+): T | undefined => {
   if (editor === undefined) {
     console.error("no active editor");
     return undefined;
