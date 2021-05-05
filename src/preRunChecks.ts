@@ -1,5 +1,4 @@
 import { Diagnostic, Extension, TextEditor, Uri } from "vscode";
-import { sanityCheck } from "./sanityCheck";
 
 export const preRunChecks = (
   editor: TextEditor | undefined,
@@ -18,10 +17,8 @@ export const preRunChecks = (
   }
 
   const { document, selection } = editor;
-  const errorsWithinSelection = sanityCheck(
-    getDiagnostics,
-    document.uri,
-    selection
+  const errorsWithinSelection = getDiagnostics(document.uri).filter(
+    (diagnostic) => diagnostic.range.intersection(selection) !== undefined
   );
   if (errorsWithinSelection.length > 0) {
     console.error(
