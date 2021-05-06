@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { preRunChecks } from "./preRunChecks";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,19 +17,18 @@ export const activate = (context: vscode.ExtensionContext) => {
   // The commandId parameter must match the command field in package.json
   let disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
-    () => {
-      // Get the active text editor
-      const editor = vscode.window.activeTextEditor;
-
-      if (editor !== undefined) {
-        const document = editor.document;
-        const selection = editor.selection;
-
-        // Get the word within the selection
-        const word = document.getText(selection);
-        // Display a message box to the user
-        vscode.window.showInformationMessage(word);
+    (): void => {
+      const editor = preRunChecks(
+        vscode.window.activeTextEditor,
+        vscode.extensions.getExtension,
+        vscode.languages.getDiagnostics
+      );
+      if (editor === undefined) {
+        return;
       }
+      const { document, selection } = editor;
+      const word = document.getText(selection);
+      vscode.window.showInformationMessage(word);
     }
   );
 

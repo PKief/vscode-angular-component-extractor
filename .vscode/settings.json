@@ -15,5 +15,8 @@
     "source.fixAll.eslint": true
   },
   "eslint.validate": ["typescript"],
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": null
+  }
 }
