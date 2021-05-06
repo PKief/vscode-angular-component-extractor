@@ -35,7 +35,7 @@ export const activate = (context: vscode.ExtensionContext) => {
       }
 
       vscode.window.showInformationMessage(
-        `Create ${componentName} component with this input: ${word}`
+        `Create ${componentName} component with this template: ${word}`
       );
     }
   );
