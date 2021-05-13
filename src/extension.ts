@@ -15,9 +15,9 @@ export const activate = (context: vscode.ExtensionContext) => {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
+  const disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
-    (): void => {
+    async (): Promise<void> => {
       const editor = preRunChecks(
         vscode.window.activeTextEditor,
         vscode.extensions.getExtension,
@@ -28,7 +28,15 @@ export const activate = (context: vscode.ExtensionContext) => {
       }
       const { document, selection } = editor;
       const word = document.getText(selection);
-      vscode.window.showInformationMessage(word);
+      const componentName = await getComponentName();
+
+      if (componentName === undefined) {
+        return;
+      }
+
+      vscode.window.showInformationMessage(
+        `Create ${componentName} component with this template: ${word}`
+      );
     }
   );
 
@@ -37,3 +45,21 @@ export const activate = (context: vscode.ExtensionContext) => {
 
 // this method is called when your extension is deactivated
 export const deactivate = () => {};
+
+/**
+ * Prompt the user to enter the name of the component which will be created
+ * @returns Promise of the component name
+ */
+const getComponentName = (): Thenable<string | undefined> =>
+  vscode.window.showInputBox({
+    placeHolder: "Component name",
+    prompt: "Enter component name",
+    validateInput: (input: string) => {
+      // only lower or upper case letters and dashes allowed
+      const pattern = new RegExp(/^[a-z\-]+$/i);
+
+      return pattern.test(input)
+        ? undefined
+        : "Please enter a valid component name";
+    },
+  });
