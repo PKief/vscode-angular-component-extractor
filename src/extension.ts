@@ -37,6 +37,11 @@ export const activate = (context: vscode.ExtensionContext) => {
       vscode.window.showInformationMessage(
         `Create ${componentName} component with this template: ${word}`
       );
+
+      const terminal = vscode.window.createTerminal();
+      const command = `ng generate component ${componentName}`;
+      terminal.sendText(command);
+      terminal.show();
     }
   );
 
