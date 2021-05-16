@@ -1,13 +1,19 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import { exec, execSync } from "child_process";
+import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+import { getConfig } from "./config";
 import { preRunChecks } from "./preRunChecks";
+
+let extensionId: string;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export const activate = (context: vscode.ExtensionContext) => {
+  extensionId = getExtensionId(context);
+
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
@@ -203,12 +209,28 @@ const adjustCurrentComponent = (componentName: string) => {
     throw Error("Something went wrong");
   }
 
-  // TODO Assumption that default prefix is "app"
-  // Could make it configurable via VS Code settings
-  const component = `<app-${componentName}></app-${componentName}>`;
+  // Get the default prefix from the VS Code settings
+  const defaultPrefix = getConfig(extensionId, "default-prefix");
+
+  // Component HTML tags
+  const component = `<${defaultPrefix}-${componentName}></${defaultPrefix}-${componentName}>`;
   editor.edit((editBuilder) => {
     editBuilder.replace(selection, component);
   });
+};
+
+/**
+ * Load the extension id of the package json file
+ * @param context Context of VS Code extension
+ */
+const getExtensionId = (context: vscode.ExtensionContext): string => {
+  const extensionPath = path.join(context.extensionPath, "package.json");
+  const packageFile = JSON.parse(fs.readFileSync(extensionPath, "utf8"));
+
+  if (!packageFile) {
+    throw Error("Failed to initialize extension!");
+  }
+  return packageFile.name;
 };
 
 // this method is called when your extension is deactivated
