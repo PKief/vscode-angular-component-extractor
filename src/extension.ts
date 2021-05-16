@@ -1,5 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import * as cp from "child_process";
+import * as path from "path";
 import * as vscode from "vscode";
 import { preRunChecks } from "./preRunChecks";
 
@@ -12,44 +14,54 @@ export const activate = (context: vscode.ExtensionContext) => {
     'Congratulations, your extension "angular-component-extractor" is now active!'
   );
 
+  const generateCommand = async (): Promise<void> => {
+    const editor = preRunChecks(
+      vscode.window.activeTextEditor,
+      vscode.extensions.getExtension,
+      vscode.languages.getDiagnostics
+    );
+    if (editor === undefined) {
+      return;
+    }
+    const { document, selection } = editor;
+    const selectedSnippet = document.getText(selection);
+    const componentName = await getComponentName();
+
+    if (componentName === undefined) {
+      return;
+    }
+
+    let componentDirectory: string;
+    try {
+      componentDirectory = getDirectoryName();
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Could not find directory to generate component ${componentName}`
+      );
+      return;
+    }
+
+    checkAngularCli(componentDirectory);
+
+    vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        cancellable: false,
+        title: "Generating Angular Component...",
+      },
+      generateComponentProgress(componentDirectory, componentName)
+    );
+  };
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
   const disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
-    async (): Promise<void> => {
-      const editor = preRunChecks(
-        vscode.window.activeTextEditor,
-        vscode.extensions.getExtension,
-        vscode.languages.getDiagnostics
-      );
-      if (editor === undefined) {
-        return;
-      }
-      const { document, selection } = editor;
-      const word = document.getText(selection);
-      const componentName = await getComponentName();
-
-      if (componentName === undefined) {
-        return;
-      }
-
-      vscode.window.showInformationMessage(
-        `Create ${componentName} component with this template: ${word}`
-      );
-
-      const terminal = vscode.window.createTerminal();
-      const command = `ng generate component ${componentName}`;
-      terminal.sendText(command);
-      terminal.show();
-    }
+    generateCommand
   );
 
   context.subscriptions.push(disposable);
 };
-
-// this method is called when your extension is deactivated
-export const deactivate = () => {};
 
 /**
  * Prompt the user to enter the name of the component which will be created
@@ -68,3 +80,73 @@ const getComponentName = (): Thenable<string | undefined> =>
         : "Please enter a valid component name";
     },
   });
+
+/**
+ * Check availability of Angular CLI on the command line
+ * @param directory Directory which will use the Angular CLI
+ */
+const checkAngularCli = (directory: string) => {
+  try {
+    cp.execSync("ng --version", { cwd: directory });
+  } catch (error) {
+    console.error("Could not find Angular CLI", error);
+  }
+};
+
+/**
+ * Get the name of the directory of the current file
+ * @returns Name of the directory
+ */
+const getDirectoryName = () => {
+  const fileName = vscode.window.activeTextEditor?.document.fileName;
+  if (!fileName) {
+    throw Error("Filename not known!");
+  }
+  return path.dirname(fileName);
+};
+
+/**
+ * Callback that returns the actual progress of VS Code to generate a component
+ * @param componentDirectory Directory of the current component
+ * @param componentName Name of the component which will be generated
+ * @returns Promise that resolves if the component has beed created successfully
+ */
+const generateComponentProgress = (
+  componentDirectory: string,
+  componentName: string
+) => async (
+  progress: vscode.Progress<{
+    message?: string | undefined;
+    increment?: number | undefined;
+  }>
+): Promise<void> => {
+  progress.report({ increment: 0 });
+
+  /** Angular CLI command */
+  const command = `ng generate component ${componentName}`;
+
+  cp.exec(
+    command,
+    { cwd: componentDirectory },
+    async (err, stdout: string, stderr: string) => {
+      await Promise.resolve();
+
+      progress.report({ increment: 100 });
+      vscode.window.showInformationMessage(
+        `Component ${componentName} generated successfully`
+      );
+      console.log("stdout: " + stdout);
+      console.log(stderr);
+
+      if (err) {
+        vscode.window.showErrorMessage(
+          `Component ${componentName} could not be created`
+        );
+        console.error("error: " + err);
+      }
+    }
+  );
+};
+
+// this method is called when your extension is deactivated
+export const deactivate = () => {};
