@@ -5,13 +5,9 @@ import * as vscode from "vscode";
 import { getConfig } from "./config";
 import { preRunChecks } from "./preRunChecks";
 
-let extensionId: string;
-
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export const activate = (context: vscode.ExtensionContext) => {
-  extensionId = getExtensionId(context);
-
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
@@ -46,7 +42,7 @@ export const activate = (context: vscode.ExtensionContext) => {
     // Use npx as fallback if the Angular CLI is not installed
     const useNpx = isAngularCliAvailable(componentDirectory) === false;
 
-    vscode.window.withProgress(
+    await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
         cancellable: false,
@@ -65,7 +61,8 @@ export const activate = (context: vscode.ExtensionContext) => {
     }
 
     try {
-      adjustCurrentComponent(componentName);
+      const extensionId = getExtensionId(context);
+      adjustCurrentComponent(componentName, extensionId);
     } catch (error) {
       vscode.window.showErrorMessage(
         `Could not replace selected code with <${componentName}></${componentName}>`
@@ -196,7 +193,7 @@ const writeNewComponent = (
   vscode.workspace.fs.writeFile(componentUri, Buffer.from(content));
 };
 
-const adjustCurrentComponent = (componentName: string) => {
+const adjustCurrentComponent = (componentName: string, extensionId: string) => {
   // Get the active text editor
   const editor = vscode.window.activeTextEditor;
 
