@@ -49,7 +49,7 @@ export const activate = (context: vscode.ExtensionContext) => {
       useNpx = true;
     }
 
-    vscode.window.withProgress(
+    await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
         cancellable: false,
@@ -57,6 +57,24 @@ export const activate = (context: vscode.ExtensionContext) => {
       },
       generateComponentProgress(componentDirectory, componentName, useNpx)
     );
+
+    try {
+      writeNewComponent(componentDirectory, componentName, selectedSnippet);
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Could not write selected Code Snipped into generated component ${componentName}`
+      );
+      return;
+    }
+
+    try {
+      adjustCurrentComponent(componentName);
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Could not replace selected code with <${componentName}></${componentName}>`
+      );
+      return;
+    }
   };
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -122,39 +140,77 @@ const generateComponentProgress = (
   componentDirectory: string,
   componentName: string,
   useNpx: boolean
-) => async (
+) => (
   progress: vscode.Progress<{
     message?: string | undefined;
     increment?: number | undefined;
   }>
-): Promise<void> => {
-  progress.report({ increment: 0 });
+) => {
+  return new Promise<void>((resolve, reject) => {
+    progress.report({ increment: 0 });
 
-  /** Angular CLI command */
-  const command =
-    (useNpx ? "npx " : "") + `ng generate component ${componentName}`;
+    /** Angular CLI command */
+    const command =
+      (useNpx ? "npx " : "") + `ng generate component ${componentName}`;
 
-  exec(
-    command,
-    { cwd: componentDirectory },
-    async (err, stdout: string, stderr: string) => {
-      await Promise.resolve();
-
-      progress.report({ increment: 100 });
-      vscode.window.showInformationMessage(
-        `Component ${componentName} generated successfully`
-      );
-      console.log("stdout: " + stdout);
-      console.log(stderr);
-
-      if (err) {
-        vscode.window.showErrorMessage(
-          `Component ${componentName} could not be created`
+    exec(
+      command,
+      { cwd: componentDirectory },
+      (err, stdout: string, stderr: string) => {
+        progress.report({ increment: 100 });
+        vscode.window.showInformationMessage(
+          `Component ${componentName} generated successfully`
         );
-        console.error("error: " + err);
+        console.log("stdout: " + stdout);
+        console.log(stderr);
+
+        if (err) {
+          vscode.window.showErrorMessage(
+            `Component ${componentName} could not be created`
+          );
+          console.error("error: " + err);
+          reject(err);
+        }
+
+        return resolve();
       }
-    }
+    );
+  });
+};
+
+const writeNewComponent = (
+  directory: string,
+  componentName: string,
+  content: string
+) => {
+  const componentPath = path.join(
+    directory,
+    componentName,
+    `${componentName}.component.html`
   );
+  const componentUri = vscode.Uri.file(componentPath);
+  vscode.workspace.fs.writeFile(componentUri, Buffer.from(content));
+};
+
+const adjustCurrentComponent = (componentName: string) => {
+  // Get the active text editor
+  const editor = vscode.window.activeTextEditor;
+
+  const document = editor?.document;
+  const selection = editor?.selection;
+
+  if (!editor || !document || !selection) {
+    throw Error("Something went wrong");
+  }
+
+  // Get the word within the selection
+  const word = document.getText(selection);
+  // TODO Assumption that default prefix is "app"
+  // Could make it configurable via VS Code settings
+  const component = `<app-${componentName}></app-${componentName}>`;
+  editor.edit((editBuilder) => {
+    editBuilder.replace(selection, component);
+  });
 };
 
 // this method is called when your extension is deactivated
