@@ -19,7 +19,7 @@ This extension for VS Code makes it easier to split components in an Angular pro
 
 ## Configuration
 
-Angular generates component with a prefix. This prefix can be customized via VS Code settings:
+Angular generates components with a prefix. This prefix can be customized via VS Code settings:
 
 ```json
 {
