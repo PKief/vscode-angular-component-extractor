@@ -41,7 +41,13 @@ export const activate = (context: vscode.ExtensionContext) => {
       return;
     }
 
-    checkAngularCli(componentDirectory);
+    let useNpx = false;
+
+    try {
+      checkAngularCli(componentDirectory);
+    } catch (error) {
+      useNpx = true;
+    }
 
     vscode.window.withProgress(
       {
@@ -49,7 +55,7 @@ export const activate = (context: vscode.ExtensionContext) => {
         cancellable: false,
         title: "Generating Angular Component...",
       },
-      generateComponentProgress(componentDirectory, componentName)
+      generateComponentProgress(componentDirectory, componentName, useNpx)
     );
   };
   // The command has been defined in the package.json file
@@ -89,7 +95,7 @@ const checkAngularCli = (directory: string) => {
   try {
     execSync("ng --version", { cwd: directory });
   } catch (error) {
-    console.error("Could not find Angular CLI", error);
+    throw Error("Could not find Angular CLI, Error: " + error);
   }
 };
 
@@ -109,11 +115,13 @@ const getDirectoryName = () => {
  * Callback that returns the actual progress of VS Code to generate a component
  * @param componentDirectory Directory of the current component
  * @param componentName Name of the component which will be generated
+ * @param useNpx If Angular CLI is not installed on the machine
  * @returns Promise that resolves if the component has beed created successfully
  */
 const generateComponentProgress = (
   componentDirectory: string,
-  componentName: string
+  componentName: string,
+  useNpx: boolean
 ) => async (
   progress: vscode.Progress<{
     message?: string | undefined;
@@ -123,7 +131,8 @@ const generateComponentProgress = (
   progress.report({ increment: 0 });
 
   /** Angular CLI command */
-  const command = `ng generate component ${componentName}`;
+  const command =
+    (useNpx ? "npx " : "") + `ng generate component ${componentName}`;
 
   exec(
     command,
