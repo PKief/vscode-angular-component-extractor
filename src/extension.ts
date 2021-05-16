@@ -4,11 +4,13 @@ import {
   adjustParentComponentTemplate,
   writeChildTemplate as writeChildComponentTemplate,
 } from "./angular";
-import { getComponentName } from "./utils/getComponentName";
-import { getDirectoryName } from "./utils/getDirectoryName";
-import { getExtensionId } from "./utils/getExtensionId";
-import { isAngularCliAvailable } from "./utils/isAngularCliAvailable";
-import { preRunChecks } from "./utils/preRunChecks";
+import {
+  getComponentName,
+  getDirectoryName,
+  getExtensionId,
+  isAngularCliAvailable,
+  preRunChecks,
+} from "./utils";
 
 export const activate = (context: vscode.ExtensionContext) => {
   console.log(
