@@ -1,6 +1,4 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import { exec, execSync } from "child_process";
+import { exec, ExecException, execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
@@ -37,23 +35,16 @@ export const activate = (context: vscode.ExtensionContext) => {
       return;
     }
 
-    let componentDirectory: string;
-    try {
-      componentDirectory = getDirectoryName();
-    } catch (error) {
+    const componentDirectory = getDirectoryName();
+    if (componentDirectory === undefined) {
       vscode.window.showErrorMessage(
         `Could not find directory to generate component ${componentName}`
       );
       return;
     }
 
-    let useNpx = false;
-
-    try {
-      checkAngularCli(componentDirectory);
-    } catch (error) {
-      useNpx = true;
-    }
+    // Use npx as fallback if the Angular CLI is not installed
+    const useNpx = isAngularCliAvailable(componentDirectory) === false;
 
     await vscode.window.withProgress(
       {
@@ -82,6 +73,7 @@ export const activate = (context: vscode.ExtensionContext) => {
       return;
     }
   };
+
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
@@ -115,11 +107,12 @@ const getComponentName = (): Thenable<string | undefined> =>
  * Check availability of Angular CLI on the command line
  * @param directory Directory which will use the Angular CLI
  */
-const checkAngularCli = (directory: string) => {
+const isAngularCliAvailable = (directory: string): boolean => {
   try {
     execSync("ng --version", { cwd: directory });
-  } catch (error) {
-    throw Error("Could not find Angular CLI, Error: " + error);
+    return true;
+  } catch {
+    return false;
   }
 };
 
@@ -127,10 +120,10 @@ const checkAngularCli = (directory: string) => {
  * Get the name of the directory of the current file
  * @returns Name of the directory
  */
-const getDirectoryName = () => {
+const getDirectoryName = (): string | undefined => {
   const fileName = vscode.window.activeTextEditor?.document.fileName;
   if (!fileName) {
-    throw Error("Filename not known!");
+    return undefined;
   }
   return path.dirname(fileName);
 };
@@ -157,18 +150,16 @@ const generateComponentProgress = (
 
     /** Angular CLI command */
     const command =
-      (useNpx ? "npx " : "") + `ng generate component ${componentName}`;
+      (useNpx ? "npx -p @angular/cli " : "") +
+      `ng generate component ${componentName}`;
 
     exec(
       command,
       { cwd: componentDirectory },
-      (err, stdout: string, stderr: string) => {
-        progress.report({ increment: 100 });
-        vscode.window.showInformationMessage(
-          `Component ${componentName} generated successfully`
-        );
+      (err: ExecException | null, stdout: string, stderr: string) => {
         console.log("stdout: " + stdout);
         console.log(stderr);
+        progress.report({ increment: 100 });
 
         if (err) {
           vscode.window.showErrorMessage(
@@ -176,6 +167,10 @@ const generateComponentProgress = (
           );
           console.error("error: " + err);
           reject(err);
+        } else {
+          vscode.window.showInformationMessage(
+            `Component ${componentName} generated successfully`
+          );
         }
 
         return resolve();

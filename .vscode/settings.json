@@ -17,6 +17,6 @@
   "eslint.validate": ["typescript"],
   "editor.formatOnSave": true,
   "[typescript]": {
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
