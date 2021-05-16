@@ -203,8 +203,6 @@ const adjustCurrentComponent = (componentName: string) => {
     throw Error("Something went wrong");
   }
 
-  // Get the word within the selection
-  const word = document.getText(selection);
   // TODO Assumption that default prefix is "app"
   // Could make it configurable via VS Code settings
   const component = `<app-${componentName}></app-${componentName}>`;
