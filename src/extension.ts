@@ -31,7 +31,7 @@ export const activate = (context: vscode.ExtensionContext) => {
       return;
     }
 
-    const componentDirectory = getDirectoryName();
+    const componentDirectory = getDirectoryName(document);
     if (componentDirectory === undefined) {
       vscode.window.showErrorMessage(
         `Could not find directory to generate component ${componentName}`
@@ -89,7 +89,8 @@ const isAngularCliAvailable = (directory: string): boolean => {
   try {
     execSync("ng --version", { cwd: directory });
     return true;
-  } catch {
+  } catch (error) {
+    console.error(error);
     return false;
   }
 };
@@ -98,8 +99,8 @@ const isAngularCliAvailable = (directory: string): boolean => {
  * Get the name of the directory of the current file
  * @returns Name of the directory
  */
-const getDirectoryName = (): string | undefined => {
-  const fileName = vscode.window.activeTextEditor?.document.fileName;
+const getDirectoryName = (document: vscode.TextDocument): string | undefined => {
+  const fileName = document.fileName;
   if (!fileName) {
     return undefined;
   }
