@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as cp from "child_process";
+import { exec, execSync } from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
 import { preRunChecks } from "./preRunChecks";
@@ -87,7 +87,7 @@ const getComponentName = (): Thenable<string | undefined> =>
  */
 const checkAngularCli = (directory: string) => {
   try {
-    cp.execSync("ng --version", { cwd: directory });
+    execSync("ng --version", { cwd: directory });
   } catch (error) {
     console.error("Could not find Angular CLI", error);
   }
@@ -125,7 +125,7 @@ const generateComponentProgress = (
   /** Angular CLI command */
   const command = `ng generate component ${componentName}`;
 
-  cp.exec(
+  exec(
     command,
     { cwd: componentDirectory },
     async (err, stdout: string, stderr: string) => {
