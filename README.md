@@ -1,71 +1,28 @@
-# angular-component-extractor README
+<h1 align="center">
+  <br>
+    <img src="./logo.png" alt="logo" width="200">
+  <br><br>
+  Angular Component Extractor
+  <br>
+  <br>
+</h1>
 
-This is the README for your extension "angular-component-extractor". After writing up a brief description, we recommend including the following sections.
+<h4 align="center">Extract Angular Components based on editor selection</h4>
 
-## Features
+## Description
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extension for VS Code makes it easier to split components in an Angular project. Within a template you can select the part which should be extracted. Then another component is generated in the same directory using the Angular CLI.
 
-For example if there is an image subfolder under your extension project workspace:
+## How to use
 
-\!\[feature X\]\(images/feature-x.png\)
+![Preview](./images/preview.gif)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Configuration
 
-## Requirements
+Angular generates component with a prefix. This prefix can be customized via VS Code settings:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+```json
+{
+  "angular-component-extractor.default-prefix": "app"
+}
+```

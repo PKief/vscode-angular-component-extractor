@@ -9,6 +9,13 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "Angular",
+    "Angular CLI",
+    "Components",
+    "HTML",
+    "TypeScript"
+  ],
   "activationEvents": [
     "onLanguage:html"
   ],
