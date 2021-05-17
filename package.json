@@ -24,9 +24,20 @@
     "commands": [
       {
         "command": "angular-component-extractor.extract-component",
-        "title": "Extract component"
+        "title": "Angular: Extract component"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Angular Component Extractor",
+      "properties": {
+        "angular-component-extractor.default-prefix": {
+          "type": "string",
+          "default": "app",
+          "description": "Prefix of an Angular component"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
