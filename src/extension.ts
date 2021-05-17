@@ -1,15 +1,14 @@
 import { exec, ExecException } from "child_process";
 import * as vscode from "vscode";
-import {
-  adjustParentComponentTemplate,
-  writeChildTemplate as writeChildComponentTemplate,
-} from "./angular";
+import { convert } from "./angular";
+import { getConfig } from "./config";
 import {
   getComponentName,
   getDirectoryName,
   getExtensionId,
   isAngularCliAvailable,
   preRunChecks,
+  updateFiles,
 } from "./utils";
 
 export const activate = (context: vscode.ExtensionContext) => {
@@ -42,7 +41,7 @@ const getExtractCommand = (context: vscode.ExtensionContext) => {
       return;
     }
     const { document, selection } = editor;
-    const selectedSnippet = document.getText(selection);
+    const selectedText = document.getText(selection);
     const componentName = await getComponentName();
 
     if (componentName === undefined) {
@@ -69,27 +68,28 @@ const getExtractCommand = (context: vscode.ExtensionContext) => {
       generateComponentProgress(componentDirectory, componentName, useNpx)
     );
 
-    try {
-      writeChildComponentTemplate(
-        componentDirectory,
-        componentName,
-        selectedSnippet
-      );
-    } catch (error) {
-      vscode.window.showErrorMessage(
-        `Could not write selected Code Snipped into generated component ${componentName}`
-      );
+    const extensionId = getExtensionId(context);
+    if (extensionId === undefined) {
       return;
     }
+    const defaultPrefix = getConfig<string>(extensionId, "default-prefix");
+    if (defaultPrefix === undefined) {
+      return;
+    }
+    const changes = convert({
+      componentName,
+      directory: componentDirectory,
+      selectedText,
+      config: {
+        defaultPrefix,
+      },
+    });
 
     try {
-      const extensionId = getExtensionId(context);
-      adjustParentComponentTemplate(componentName, extensionId);
-    } catch (error) {
-      vscode.window.showErrorMessage(
-        `Could not replace selected code with <${componentName}></${componentName}>`
-      );
-      return;
+      await updateFiles(editor, selection, changes);
+    } catch (error: unknown) {
+      const { message } = error as Error;
+      vscode.window.showErrorMessage(message);
     }
   };
 };
