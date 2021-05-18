@@ -13,32 +13,32 @@ export interface Input {
  * @param input Input for a component change
  * @returns Changes object
  */
-export function convert(input: Input): Changes {
+export const getChanges = (input: Input): Changes => {
   return {
     originTemplateReplacement: getReplacement(input),
     files: [getComponentTemplateChange(input)],
   };
-}
+};
 
 /**
  * Get the replacement code of the child component's template
  * @param param0 Input parameter
  * @returns New Template code of child component
  */
-function getReplacement({ componentName, config }: Input): string {
+const getReplacement = ({ componentName, config }: Input): string => {
   return `<${config.defaultPrefix}-${componentName}></${config.defaultPrefix}-${componentName}>`;
-}
+};
 
 /**
  * Get the file change information of the component
  * @param param0 Input parameter
  * @returns FileChange information
  */
-function getComponentTemplateChange({
+const getComponentTemplateChange = ({
   directory,
   componentName,
   selectedText,
-}: Input): FileChange {
+}: Input): FileChange => {
   return {
     content: selectedText,
     path: path.join(
@@ -47,4 +47,4 @@ function getComponentTemplateChange({
       `${componentName}.component.html`
     ),
   };
-}
+};

@@ -11,20 +11,19 @@ type Task = {
 };
 
 export const startProgress = (tasks: Task[]) => (progress: Progress) => {
-  return tasks.reduce((promise, task, index) => {
+  return tasks.reduce((promise: Promise<void>, task: Task) => {
     return promise.then(() => {
-      updateProgress(index, tasks.length, progress, task.message);
+      updateProgress(tasks.length, progress, task.message);
       return task.execute();
     });
   }, Promise.resolve());
 };
 
 const updateProgress = (
-  index: number,
   amount: number,
   progress: Progress,
   message: string
 ) => {
-  const increment = ((index + 1) / amount) * 100;
+  const increment = 100 / amount;
   progress.report({ message, increment });
 };
