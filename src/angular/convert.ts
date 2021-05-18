@@ -8,6 +8,11 @@ export interface Input {
   config: Config;
 }
 
+/**
+ * Convert component information into Changes object
+ * @param input Input for a component change
+ * @returns Changes object
+ */
 export function convert(input: Input): Changes {
   return {
     originTemplateReplacement: getReplacement(input),
@@ -15,10 +20,20 @@ export function convert(input: Input): Changes {
   };
 }
 
-function getReplacement({ componentName, config }: Input) {
+/**
+ * Get the replacement code of the child component's template
+ * @param param0 Input parameter
+ * @returns New Template code of child component
+ */
+function getReplacement({ componentName, config }: Input): string {
   return `<${config.defaultPrefix}-${componentName}></${config.defaultPrefix}-${componentName}>`;
 }
 
+/**
+ * Get the file change information of the component
+ * @param param0 Input parameter
+ * @returns FileChange information
+ */
 function getComponentTemplateChange({
   directory,
   componentName,

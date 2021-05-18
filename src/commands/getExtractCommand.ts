@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { convert, generateComponentProgress } from "../angular";
+import { convert, startProgress } from "../angular";
 import { getConfig } from "../config";
 import {
   getComponentName,
@@ -9,6 +9,7 @@ import {
   preRunChecks,
   updateFiles,
 } from "../utils";
+import { generateNewComponent } from "../angular/generateNewComponent";
 
 /**
  * Get the command function to extract a child component
@@ -42,24 +43,62 @@ export const getExtractCommand = (context: vscode.ExtensionContext) => {
     }
 
     // Use npx as fallback if the Angular CLI is not installed
-    const useNpx = isAngularCliAvailable(componentDirectory) === false;
+    const useNpx =
+      isAngularCliAvailable(componentDirectory, context.workspaceState) ===
+      false;
 
-    await vscode.window.withProgress(
-      {
-        location: vscode.ProgressLocation.Notification,
-        cancellable: false,
-        title: "Generating Angular Component...",
-      },
-      generateComponentProgress(componentDirectory, componentName, useNpx)
-    );
+    try {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          cancellable: false,
+          title: "Generating Angular Component...",
+        },
+        startProgress([
+          {
+            execute: generateNewComponent(
+              useNpx,
+              componentName,
+              componentDirectory
+            ),
+            message: "Generate new component",
+          },
+          {
+            execute: updateComponents(
+              context,
+              componentName,
+              componentDirectory,
+              selectedText,
+              editor,
+              selection
+            ),
+            message: "Update components",
+          },
+        ])
+      );
+    } catch (error) {
+      console.error(error);
+      vscode.window.showErrorMessage(error);
+    }
+  };
+};
 
+const updateComponents = (
+  context: vscode.ExtensionContext,
+  componentName: string,
+  componentDirectory: string,
+  selectedText: string,
+  editor: vscode.TextEditor,
+  selection: any
+) => () => {
+  return new Promise<void>(async (resolve, reject) => {
     const extensionId = getExtensionId(context);
     if (extensionId === undefined) {
-      return;
+      return reject("Could not find extension id");
     }
     const defaultPrefix = getConfig<string>(extensionId, "default-prefix");
     if (defaultPrefix === undefined) {
-      return;
+      return reject("Could not find default prefix");
     }
     const changes = convert({
       componentName,
@@ -72,9 +111,10 @@ export const getExtractCommand = (context: vscode.ExtensionContext) => {
 
     try {
       await updateFiles(editor, selection, changes);
+      return resolve();
     } catch (error: unknown) {
       const { message } = error as Error;
-      vscode.window.showErrorMessage(message);
+      return reject(message);
     }
-  };
+  });
 };
