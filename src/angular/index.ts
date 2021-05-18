@@ -1,2 +1,3 @@
+export * from "./generateNewComponent";
 export * from "./getChanges";
-export * from "../utils/taskRunner";
+export * from "./isAngularCliAvailable";

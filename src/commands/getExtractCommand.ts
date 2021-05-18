@@ -1,14 +1,17 @@
 import * as vscode from "vscode";
-import { getChanges, startProgress } from "../angular";
-import { generateNewComponent } from "../angular/generateNewComponent";
+import {
+  generateNewComponent,
+  getChanges,
+  isAngularCliAvailable,
+} from "../angular";
 import { getConfig } from "../config";
 import {
   getComponentName,
   getDirectoryName,
   getExtensionId,
-  isAngularCliAvailable,
   preRunChecks,
   replaceSelection,
+  startProgress,
   updateFiles,
 } from "../utils";
 
