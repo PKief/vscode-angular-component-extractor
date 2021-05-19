@@ -9,7 +9,7 @@ export const activate = (context: vscode.ExtensionContext) => {
   const generateCommand = getExtractCommand(context);
   const disposable = vscode.commands.registerCommand(
     "angular-component-extractor.extract-component",
-    generateCommand
+    () => generateCommand
   );
 
   context.subscriptions.push(disposable);

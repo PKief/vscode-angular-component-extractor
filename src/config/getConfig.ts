@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 
-/** Get the value of a workspace config property */
+/**
+ * Get the value of a configuration
+ * @param extensionId Id of the extension (equivalent to the name in the package.json)
+ * @param config Name of the config
+ * @returns Value of the config
+ */
 export const getConfig = <T>(
   extensionId: string,
   config: string

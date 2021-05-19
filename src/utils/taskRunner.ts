@@ -5,13 +5,20 @@ type Progress = vscode.Progress<{
   increment?: number | undefined;
 }>;
 
+type TaskExecution = Promise<unknown>;
+
 type Task = {
   message: string;
-  execute: () => Promise<void>;
+  execute: () => TaskExecution;
 };
 
+/**
+ * Processes multiple tasks in sequence and updates a VS Code progress
+ * @param tasks List of tasks
+ * @returns Callback that handles a VS Code progress
+ */
 export const startProgress = (tasks: Task[]) => (progress: Progress) => {
-  return tasks.reduce((promise: Promise<void>, task: Task) => {
+  return tasks.reduce((promise: TaskExecution, task: Task) => {
     return promise.then(() => {
       updateProgress(tasks.length, progress, task.message);
       return task.execute();
@@ -19,6 +26,12 @@ export const startProgress = (tasks: Task[]) => (progress: Progress) => {
   }, Promise.resolve());
 };
 
+/**
+ * Update the VS Code progress object with a new increment
+ * @param amount Amount of tasks
+ * @param progress Progress object of VS Code
+ * @param message Message which is shown for each executed task
+ */
 const updateProgress = (
   amount: number,
   progress: Progress,
