@@ -38,7 +38,12 @@ const updateFile = async (fileChange: FileChange): Promise<void> => {
       Buffer.from(fileChange.content)
     );
   } catch (error) {
-    console.error(error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      `Error while writing to the file ${fileChange.path}: ${message}`,
+      fileChange,
+      error
+    );
   }
 };
 
