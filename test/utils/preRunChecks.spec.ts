@@ -4,11 +4,12 @@ import { expect } from "chai";
 import {
   Diagnostic,
   Extension,
+  Range,
   Selection,
   TextDocument,
   TextEditor,
 } from "vscode";
-import { Stub } from "../utils";
+import { stub, Stub } from "../utils";
 const tsSinon = { stubConstructor, stubInterface, stubObject };
 
 type FunctionPrarmeters = Parameters<typeof preRunChecks>;
@@ -43,7 +44,12 @@ describe("Utils preRunChecks", () => {
   });
 
   it("should not succeed if there are compilation errors within the document", () => {
-    // const test = tsSinon.stubInterface<InstanceType<Diagnostic>>();
+    const createDiagnostic = () =>
+      (({
+        range: {
+          intersection: stub<Range["intersection"]>().returns({} as Range),
+        },
+      } as unknown) as Diagnostic);
     expect(
       preRunChecks(
         {
@@ -51,8 +57,22 @@ describe("Utils preRunChecks", () => {
           selection: tsSinon.stubInterface<Selection>(),
         },
         getExtension.returns(tsSinon.stubInterface<Extension<unknown>>()),
-        getDiagnostics.returns([])
+        getDiagnostics.returns([createDiagnostic()])
       )
     ).to.equal(undefined);
+  });
+
+  it("should succeed if conditions are met", () => {
+    const input = {
+      document: tsSinon.stubInterface<TextDocument>(),
+      selection: tsSinon.stubInterface<Selection>(),
+    };
+    expect(
+      preRunChecks(
+        input,
+        getExtension.returns(tsSinon.stubInterface<Extension<unknown>>()),
+        getDiagnostics.returns([])
+      )
+    ).to.deep.equal(input);
   });
 });
