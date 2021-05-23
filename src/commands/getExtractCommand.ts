@@ -27,7 +27,7 @@ export const getExtractCommand = (context: vscode.ExtensionContext) => {
     }
     const { document, selection } = editor;
     const selectedText = document.getText(selection);
-    const componentName = await getComponentName();
+    const componentName = await getComponentName(vscode.window.showInputBox);
 
     if (componentName === undefined) {
       return;
@@ -74,7 +74,10 @@ export const getExtractCommand = (context: vscode.ExtensionContext) => {
     });
 
     try {
-      await updateFiles(editor, selection, changes);
+      await updateFiles(editor, selection, changes, {
+        getUri: vscode.Uri.file,
+        writeFile: vscode.workspace.fs.writeFile,
+      });
     } catch (error: unknown) {
       const { message } = error as Error;
       vscode.window.showErrorMessage(message);

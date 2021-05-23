@@ -1,18 +1,26 @@
-import { Changes, FileChange } from "../types";
-import * as vscode from "vscode";
+import { Selection, TextEditor } from "vscode";
+import { Changes, FileChange, VSCodeAbstraction } from "../types";
+
+export interface VSCodeWrite {
+  writeFile: VSCodeAbstraction.WriteFile;
+  getUri: VSCodeAbstraction.GetUri;
+}
 
 export async function updateFiles(
-  editor: vscode.TextEditor,
-  selection: vscode.Selection,
-  changes: Changes
+  editor: TextEditor,
+  selection: Selection,
+  changes: Changes,
+  vscode: VSCodeWrite
 ): Promise<void> {
   await replaceSelection(editor, selection, changes);
-  await Promise.all(changes.files.map((fileChange) => updateFile(fileChange)));
+  await Promise.all(
+    changes.files.map((fileChange) => updateFile(fileChange, vscode))
+  );
 }
 
 async function replaceSelection(
-  editor: vscode.TextEditor,
-  selection: vscode.Selection,
+  editor: TextEditor,
+  selection: Selection,
   changes: Changes
 ): Promise<void> {
   try {
@@ -24,10 +32,13 @@ async function replaceSelection(
   }
 }
 
-async function updateFile(fileChange: FileChange): Promise<void> {
+async function updateFile(
+  fileChange: FileChange,
+  vscode: VSCodeWrite
+): Promise<void> {
   try {
-    vscode.workspace.fs.writeFile(
-      getUri(fileChange.path),
+    vscode.writeFile(
+      vscode.getUri(fileChange.path),
       Buffer.from(fileChange.content)
     );
   } catch (error) {
@@ -41,8 +52,4 @@ function errorHandler(err: Error, text: string): never {
     err
   );
   throw new Error(text);
-}
-
-function getUri(path: string): vscode.Uri {
-  return vscode.Uri.file(path);
 }

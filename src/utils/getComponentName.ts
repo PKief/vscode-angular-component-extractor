@@ -1,11 +1,13 @@
-import * as vscode from "vscode";
+import { VSCodeAbstraction } from "../types";
 
 /**
  * Prompt the user to enter the name of the component which will be created
  * @returns Promise of the component name
  */
-export const getComponentName = (): Thenable<string | undefined> =>
-  vscode.window.showInputBox({
+export const getComponentName = (
+  showInputBox: VSCodeAbstraction.ShowInputBox
+): Thenable<string | undefined> =>
+  showInputBox({
     placeHolder: "Component name",
     prompt: "Enter component name",
     validateInput: (input: string) => {

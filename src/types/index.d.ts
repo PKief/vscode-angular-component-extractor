@@ -21,4 +21,7 @@ export namespace VSCodeAbstraction {
   }>;
   export type ShowErrorMessage = typeof vscode.window.showErrorMessage;
   export type ShowInformationmessage = typeof vscode.window.showInformationMessage;
+  export type ShowInputBox = typeof vscode.window.showInputBox;
+  export type WriteFile = typeof vscode.workspace.fs.writeFile;
+  export type GetUri = typeof vscode.Uri.file;
 }
