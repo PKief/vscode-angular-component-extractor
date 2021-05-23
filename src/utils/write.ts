@@ -6,32 +6,41 @@ export interface VSCodeWrite {
   getUri: VSCodeAbstraction.GetUri;
 }
 
-export async function updateFiles(
-  editor: TextEditor,
-  selection: Selection,
+/**
+ * Update files which are related to the component extraction
+ * @param changes Contains information which files need to be changed
+ * @returns Promise which resolves when all changes are done
+ */
+export const updateFiles = (
   changes: Changes,
   vscode: VSCodeWrite
-): Promise<void> {
-  await replaceSelection(editor, selection, changes);
-  await Promise.all(
+): Promise<void[]> => {
+  return Promise.all(
     changes.files.map((fileChange) => updateFile(fileChange, vscode))
   );
-}
+};
 
-async function replaceSelection(
+/**
+ * Replace the selection in the parent component's template with the selector of the generated child component
+ * @param editor VS Code editor instance
+ * @param selection Selected code of the template
+ * @param changes Contains information which files need to be changed
+ * @returns Promise which resolves when the replacement of in the template was successfully executed
+ */
+export const replaceSelection = async (
   editor: TextEditor,
   selection: Selection,
   changes: Changes
-): Promise<void> {
-  try {
-    await editor.edit((editBuilder) => {
-      editBuilder.replace(selection, changes.originTemplateReplacement);
-    });
-  } catch (error) {
-    errorHandler(error, "Failed to replace selected snipped");
-  }
-}
+) => {
+  return await editor.edit((editBuilder) => {
+    editBuilder.replace(selection, changes.originTemplateReplacement);
+  });
+};
 
+/**
+ * Update a file based on the FileChange information
+ * @param fileChange Contains the information about the content to be changed
+ */
 async function updateFile(
   fileChange: FileChange,
   vscode: VSCodeWrite
@@ -42,14 +51,11 @@ async function updateFile(
       Buffer.from(fileChange.content)
     );
   } catch (error) {
-    errorHandler(error, `Could not edit '${fileChange.path}`);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      `Error while writing to the file ${fileChange.path}: ${message}`,
+      fileChange,
+      error
+    );
   }
-}
-
-function errorHandler(err: Error, text: string): never {
-  console.error(
-    `An error occured while writing a file. Message for the user '${text}'. Error: ${err.message}`,
-    err
-  );
-  throw new Error(text);
 }

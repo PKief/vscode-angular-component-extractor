@@ -1,86 +1,145 @@
 import * as vscode from "vscode";
-import { convert, generateComponentProgress } from "../angular";
+import {
+  generateNewComponent,
+  getChanges,
+  isAngularCliAvailable,
+} from "../angular";
 import { getConfig } from "../config";
+import { Changes } from "../types";
 import {
   getComponentName,
   getDirectoryName,
   getExtensionId,
-  isAngularCliAvailable,
   preRunChecks,
+  replaceSelection,
+  startProgress,
   updateFiles,
 } from "../utils";
+
+interface ExtractCommandData {
+  changes: Changes;
+  editor: vscode.TextEditor;
+  componentName: string;
+  componentDirectory: string;
+  selection: vscode.Selection;
+  useNpx: boolean;
+}
 
 /**
  * Get the command function to extract a child component
  * @param context Context of the extension
  * @returns Function which will be called when the command is executed
  */
-export const getExtractCommand = (context: vscode.ExtensionContext) => {
-  return async (): Promise<void> => {
-    const editor = preRunChecks(
-      vscode.window.activeTextEditor,
-      vscode.extensions.getExtension,
-      vscode.languages.getDiagnostics
-    );
-    if (editor === undefined) {
-      return;
-    }
-    const { document, selection } = editor;
-    const selectedText = document.getText(selection);
-    const componentName = await getComponentName(vscode.window.showInputBox);
+export const getExtractCommand = async (context: vscode.ExtensionContext) => {
+  const commandData = await getExtractCommandData(context);
+  if (commandData === undefined) {
+    return;
+  }
 
-    if (componentName === undefined) {
-      return;
-    }
+  const {
+    useNpx,
+    editor,
+    componentName,
+    componentDirectory,
+    selection,
+    changes,
+  } = commandData;
 
-    const componentDirectory = getDirectoryName(document);
-    if (componentDirectory === undefined) {
-      vscode.window.showErrorMessage(
-        `Could not find directory to generate component ${componentName}`
-      );
-      return;
-    }
-
-    // Use npx as fallback if the Angular CLI is not installed
-    const useNpx = isAngularCliAvailable(componentDirectory) === false;
-
+  try {
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
         cancellable: false,
-        title: "Generating Angular Component...",
+        title: "Angular Extractor",
       },
-      generateComponentProgress(componentDirectory, componentName, useNpx, {
-        showErrorMessage: vscode.window.showErrorMessage,
-        showInformationMessage: vscode.window.showInformationMessage,
-      })
+      startProgress([
+        {
+          execute: () =>
+            generateNewComponent(useNpx, componentName, componentDirectory),
+          message: "Generate new component",
+        },
+        {
+          execute: () => replaceSelection(editor, selection, changes),
+          message: "Replace selection",
+        },
+        {
+          execute: () =>
+            updateFiles(changes, {
+              getUri: vscode.Uri.file,
+              writeFile: vscode.workspace.fs.writeFile,
+            }),
+          message: "Update files",
+        },
+      ])
     );
+  } catch (error) {
+    console.error(error);
+    vscode.window.showErrorMessage(error);
+  }
+};
 
-    const extensionId = getExtensionId(context);
-    if (extensionId === undefined) {
-      return;
-    }
-    const defaultPrefix = getConfig<string>(extensionId, "default-prefix");
-    if (defaultPrefix === undefined) {
-      return;
-    }
-    const changes = convert({
-      componentName,
-      directory: componentDirectory,
-      selectedText,
-      config: {
-        defaultPrefix,
-      },
-    });
+/**
+ * Get the information which is needed to execute the command
+ * @param context Extension context
+ * @returns Information needed to execute the command
+ */
+const getExtractCommandData = async (
+  context: vscode.ExtensionContext
+): Promise<ExtractCommandData | undefined> => {
+  const editor = preRunChecks(
+    vscode.window.activeTextEditor,
+    vscode.extensions.getExtension,
+    vscode.languages.getDiagnostics
+  );
+  if (editor === undefined) {
+    return;
+  }
+  const { document, selection } = editor;
+  const selectedText = document.getText(selection);
+  const componentName = await getComponentName(vscode.window.showInputBox);
 
-    try {
-      await updateFiles(editor, selection, changes, {
-        getUri: vscode.Uri.file,
-        writeFile: vscode.workspace.fs.writeFile,
-      });
-    } catch (error: unknown) {
-      const { message } = error as Error;
-      vscode.window.showErrorMessage(message);
-    }
+  if (componentName === undefined) {
+    return;
+  }
+
+  const componentDirectory = getDirectoryName(document);
+  if (componentDirectory === undefined) {
+    vscode.window.showErrorMessage(
+      `Could not find directory to generate component ${componentName}`
+    );
+    return;
+  }
+
+  // Use npx as fallback if the Angular CLI is not installed
+  const useNpx =
+    isAngularCliAvailable(componentDirectory, context.workspaceState) === false;
+
+  const extensionId = getExtensionId(context);
+  if (extensionId === undefined) {
+    console.error("Could not find extension id");
+    return;
+  }
+  const defaultPrefix = getConfig<string>(extensionId, "default-prefix");
+  if (defaultPrefix === undefined) {
+    console.error("Could not find default prefix");
+    return;
+  }
+
+  const changes = getChanges({
+    componentName,
+    directory: componentDirectory,
+    selectedText,
+    config: {
+      defaultPrefix,
+    },
+  });
+
+  return {
+    useNpx,
+    editor,
+    changes,
+    componentDirectory,
+    componentName,
+    selection,
   };
 };

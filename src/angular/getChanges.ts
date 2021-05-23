@@ -8,22 +8,37 @@ export interface Input {
   config: Config;
 }
 
-export function convert(input: Input): Changes {
+/**
+ * Convert component information into Changes object
+ * @param input Input for a component change
+ * @returns Changes object
+ */
+export const getChanges = (input: Input): Changes => {
   return {
     originTemplateReplacement: getReplacement(input),
     files: [getComponentTemplateChange(input)],
   };
-}
+};
 
-function getReplacement({ componentName, config }: Input) {
+/**
+ * Get the replacement code of the child component's template
+ * @param param0 Input parameter
+ * @returns New Template code of child component
+ */
+const getReplacement = ({ componentName, config }: Input): string => {
   return `<${config.defaultPrefix}-${componentName}></${config.defaultPrefix}-${componentName}>`;
-}
+};
 
-function getComponentTemplateChange({
+/**
+ * Get the file change information of the component
+ * @param param0 Input parameter
+ * @returns FileChange information
+ */
+const getComponentTemplateChange = ({
   directory,
   componentName,
   selectedText,
-}: Input): FileChange {
+}: Input): FileChange => {
   return {
     content: selectedText,
     path: path.join(
@@ -32,4 +47,4 @@ function getComponentTemplateChange({
       `${componentName}.component.html`
     ),
   };
-}
+};

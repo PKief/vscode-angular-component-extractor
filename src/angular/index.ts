@@ -1,2 +1,3 @@
-export * from "./convert";
-export * from "./generateComponentProgress";
+export * from "./generateNewComponent";
+export * from "./getChanges";
+export * from "./isAngularCliAvailable";

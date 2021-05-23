@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { convert, Input } from "../../src/angular";
+import { getChanges, Input } from "../../src/angular";
 import { Changes } from "../../src/types";
 
 describe("Angular convert", () => {
@@ -21,7 +21,7 @@ describe("Angular convert", () => {
         },
       ],
     };
-    const result = convert(input);
+    const result = getChanges(input);
     expect(result).to.deep.equal(expectedOutput);
   });
 });
