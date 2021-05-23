@@ -1,48 +1,52 @@
-import { Changes, FileChange } from "../types";
 import * as vscode from "vscode";
+import { Changes, FileChange } from "../types";
 
-export async function updateFiles(
+/**
+ * Update files which are related to the component extraction
+ * @param changes Contains information which files need to be changed
+ * @returns Promise which resolves when all changes are done
+ */
+export const updateFiles = (changes: Changes): Promise<void[]> => {
+  return Promise.all(changes.files.map((fileChange) => updateFile(fileChange)));
+};
+
+/**
+ * Replace the selection in the parent component's template with the selector of the generated child component
+ * @param editor VS Code editor instance
+ * @param selection Selected code of the template
+ * @param changes Contains information which files need to be changed
+ * @returns Promise which resolves when the replacement of in the template was successfully executed
+ */
+export const replaceSelection = async (
   editor: vscode.TextEditor,
   selection: vscode.Selection,
   changes: Changes
-): Promise<void> {
-  await replaceSelection(editor, selection, changes);
-  await Promise.all(changes.files.map((fileChange) => updateFile(fileChange)));
-}
+) => {
+  return await editor.edit((editBuilder) => {
+    editBuilder.replace(selection, changes.originTemplateReplacement);
+  });
+};
 
-async function replaceSelection(
-  editor: vscode.TextEditor,
-  selection: vscode.Selection,
-  changes: Changes
-): Promise<void> {
+/**
+ * Update a file based on the FileChange information
+ * @param fileChange Contains the information about the content to be changed
+ */
+const updateFile = async (fileChange: FileChange): Promise<void> => {
   try {
-    await editor.edit((editBuilder) => {
-      editBuilder.replace(selection, changes.originTemplateReplacement);
-    });
-  } catch (error) {
-    errorHandler(error, "Failed to replace selected snipped");
-  }
-}
-
-async function updateFile(fileChange: FileChange): Promise<void> {
-  try {
-    vscode.workspace.fs.writeFile(
+    await vscode.workspace.fs.writeFile(
       getUri(fileChange.path),
       Buffer.from(fileChange.content)
     );
   } catch (error) {
-    errorHandler(error, `Could not edit '${fileChange.path}`);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      `Error while writing to the file ${fileChange.path}: ${message}`,
+      fileChange,
+      error
+    );
   }
-}
+};
 
-function errorHandler(err: Error, text: string): never {
-  console.error(
-    `An error occured while writing a file. Message for the user '${text}'. Error: ${err.message}`,
-    err
-  );
-  throw new Error(text);
-}
-
-function getUri(path: string): vscode.Uri {
+const getUri = (path: string): vscode.Uri => {
   return vscode.Uri.file(path);
-}
+};
