@@ -1,6 +1,11 @@
 import { exec, ExecException } from "child_process";
 import { VSCodeAbstraction } from "../types";
 
+export interface VSCodeAngular {
+  showErrorMessage: VSCodeAbstraction.ShowErrorMessage;
+  showInformationMessage: VSCodeAbstraction.ShowInformationmessage;
+}
+
 /**
  * Callback that returns the actual progress of VS Code to generate a component
  * @param componentDirectory Directory of the current component
@@ -12,10 +17,7 @@ export const generateComponentProgress = (
   componentDirectory: string,
   componentName: string,
   useNpx: boolean,
-  vscode: {
-    showErrorMessage: VSCodeAbstraction.ShowErrorMessage;
-    showInformationMessage: VSCodeAbstraction.ShowInformationmessage;
-  }
+  vscode: VSCodeAngular
 ) => async (progress: VSCodeAbstraction.Progress) => {
   return new Promise<void>((resolve, reject) => {
     progress.report({ increment: 0 });
