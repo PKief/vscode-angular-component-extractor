@@ -1,5 +1,5 @@
 import { exec, ExecException } from "child_process";
-import * as vscode from "vscode";
+import { VSCodeAbstraction } from "../types";
 
 /**
  * Callback that returns the actual progress of VS Code to generate a component
@@ -11,13 +11,12 @@ import * as vscode from "vscode";
 export const generateComponentProgress = (
   componentDirectory: string,
   componentName: string,
-  useNpx: boolean
-) => async (
-  progress: vscode.Progress<{
-    message?: string | undefined;
-    increment?: number | undefined;
-  }>
-) => {
+  useNpx: boolean,
+  vscode: {
+    showErrorMessage: VSCodeAbstraction.ShowErrorMessage;
+    showInformationMessage: VSCodeAbstraction.ShowInformationmessage;
+  }
+) => async (progress: VSCodeAbstraction.Progress) => {
   return new Promise<void>((resolve, reject) => {
     progress.report({ increment: 0 });
 
@@ -35,13 +34,13 @@ export const generateComponentProgress = (
         progress.report({ increment: 100 });
 
         if (err) {
-          vscode.window.showErrorMessage(
+          vscode.showErrorMessage(
             `Component ${componentName} could not be created`
           );
           console.error("error: " + err);
           reject(err);
         } else {
-          vscode.window.showInformationMessage(
+          vscode.showInformationMessage(
             `Component ${componentName} generated successfully`
           );
         }

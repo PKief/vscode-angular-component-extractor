@@ -50,7 +50,10 @@ export const getExtractCommand = (context: vscode.ExtensionContext) => {
         cancellable: false,
         title: "Generating Angular Component...",
       },
-      generateComponentProgress(componentDirectory, componentName, useNpx)
+      generateComponentProgress(componentDirectory, componentName, useNpx, {
+        showErrorMessage: vscode.window.showErrorMessage,
+        showInformationMessage: vscode.window.showInformationMessage,
+      })
     );
 
     const extensionId = getExtensionId(context);

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { convert, Input } from "../../src/angular/convert";
+import { convert, Input } from "../../src/angular";
 import { Changes } from "../../src/types";
 
 describe("Angular convert", () => {
