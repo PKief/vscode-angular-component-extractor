@@ -9,6 +9,7 @@ export interface VSCodeWrite {
 /**
  * Update files which are related to the component extraction
  * @param changes Contains information which files need to be changed
+ * @param vscode Contains the function abstractions from vscode
  * @returns Promise which resolves when all changes are done
  */
 export const updateFiles = (
