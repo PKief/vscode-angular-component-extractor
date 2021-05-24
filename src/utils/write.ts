@@ -9,16 +9,16 @@ export interface VSCodeWrite {
 /**
  * Update files which are related to the component extraction
  * @param changes Contains information which files need to be changed
- * @param vscode Contains the function abstractions from vscode
+ * @param vscode Contains vscode function abstractions
  * @returns Promise which resolves when all changes are done
  */
 export const updateFiles = (
   changes: Changes,
   vscode: VSCodeWrite
-): Promise<void[]> => {
+): Promise<void> => {
   return Promise.all(
     changes.files.map((fileChange) => updateFile(fileChange, vscode))
-  );
+  ).then(() => void 0);
 };
 
 /**
@@ -41,6 +41,7 @@ export const replaceSelection = async (
 /**
  * Update a file based on the FileChange information
  * @param fileChange Contains the information about the content to be changed
+ * @param vscode Contains vscode function abstractions
  */
 async function updateFile(
   fileChange: FileChange,
