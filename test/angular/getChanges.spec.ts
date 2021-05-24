@@ -18,6 +18,7 @@ describe("Angular getChanges", () => {
         {
           content: `<button>hello world</button>`,
           path: "/baseDir/test/test.component.html",
+          type: "replace",
         },
       ],
     };

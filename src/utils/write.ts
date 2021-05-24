@@ -1,9 +1,10 @@
-import { Selection, TextEditor } from "vscode";
+import { Selection, TextEditor, Uri } from "vscode";
 import { Changes, FileChange, VSCodeAbstraction } from "../types";
 
 export interface VSCodeWrite {
   writeFile: VSCodeAbstraction.WriteFile;
   getUri: VSCodeAbstraction.GetUri;
+  readFile: VSCodeAbstraction.ReadFile;
 }
 
 /**
@@ -46,10 +47,9 @@ async function updateFile(
   vscode: VSCodeWrite
 ): Promise<void> {
   try {
-    vscode.writeFile(
-      vscode.getUri(fileChange.path),
-      Buffer.from(fileChange.content)
-    );
+    const path = vscode.getUri(fileChange.path);
+    const content = await getContent(fileChange, path, vscode);
+    await vscode.writeFile(path, Buffer.from(content));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(
@@ -58,4 +58,18 @@ async function updateFile(
       error
     );
   }
+}
+
+async function getContent(
+  fileChange: FileChange,
+  path: Uri,
+  vscode: VSCodeWrite
+): Promise<string> {
+  if (fileChange.type === "update") {
+    return vscode
+      .readFile(path)
+      .then((buffer) => buffer.toString())
+      .then((currentContent) => fileChange.newContent(currentContent));
+  }
+  return fileChange.content;
 }

@@ -49,5 +49,6 @@ const getComponentTemplateChange = ({
       componentName,
       `${componentName}.component.html`
     ),
+    type: "replace",
   };
 };

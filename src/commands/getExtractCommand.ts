@@ -67,6 +67,7 @@ export const getExtractCommand = async (context: vscode.ExtensionContext) => {
             updateFiles(changes, {
               getUri: vscode.Uri.file,
               writeFile: vscode.workspace.fs.writeFile,
+              readFile: vscode.workspace.fs.readFile,
             }),
           message: "Update files",
         },
