@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <img src="./logo.png" alt="logo" width="200">
+    <img src="./images/logo.png" alt="logo" width="200">
   <br><br>
   Angular Component Extractor
   <br>
