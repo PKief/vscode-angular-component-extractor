@@ -39,17 +39,6 @@
       }
     }
   },
-  "mocha": {
-    "extension": [
-      "ts"
-    ],
-    "spec": "test/**/*.spec.ts",
-    "require": "ts-node/register",
-    "watch-files": [
-      "src/**/*.ts",
-      "test/**/*.spec.ts"
-    ]
-  },
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
