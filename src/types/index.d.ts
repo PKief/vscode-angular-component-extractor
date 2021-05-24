@@ -34,12 +34,6 @@ export interface Config {
 }
 
 export namespace VSCodeAbstraction {
-  export type Progress = vscode.Progress<{
-    message?: string;
-    increment?: number;
-  }>;
-  export type ShowErrorMessage = typeof vscode.window.showErrorMessage;
-  export type ShowInformationmessage = typeof vscode.window.showInformationMessage;
   export type ShowInputBox = typeof vscode.window.showInputBox;
   export type WriteFile = typeof vscode.workspace.fs.writeFile;
   export type ReadFile = typeof vscode.workspace.fs.readFile;
