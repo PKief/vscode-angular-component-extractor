@@ -1,13 +1,23 @@
-import * as vscode from "vscode";
-import { Changes, FileChange } from "../types";
+import { Selection, TextEditor } from "vscode";
+import { Changes, FileChange, VSCodeAbstraction } from "../types";
+
+export interface VSCodeWrite {
+  writeFile: VSCodeAbstraction.WriteFile;
+  getUri: VSCodeAbstraction.GetUri;
+}
 
 /**
  * Update files which are related to the component extraction
  * @param changes Contains information which files need to be changed
  * @returns Promise which resolves when all changes are done
  */
-export const updateFiles = (changes: Changes): Promise<void[]> => {
-  return Promise.all(changes.files.map((fileChange) => updateFile(fileChange)));
+export const updateFiles = (
+  changes: Changes,
+  vscode: VSCodeWrite
+): Promise<void[]> => {
+  return Promise.all(
+    changes.files.map((fileChange) => updateFile(fileChange, vscode))
+  );
 };
 
 /**
@@ -18,8 +28,8 @@ export const updateFiles = (changes: Changes): Promise<void[]> => {
  * @returns Promise which resolves when the replacement of in the template was successfully executed
  */
 export const replaceSelection = async (
-  editor: vscode.TextEditor,
-  selection: vscode.Selection,
+  editor: TextEditor,
+  selection: Selection,
   changes: Changes
 ) => {
   return await editor.edit((editBuilder) => {
@@ -31,10 +41,13 @@ export const replaceSelection = async (
  * Update a file based on the FileChange information
  * @param fileChange Contains the information about the content to be changed
  */
-const updateFile = async (fileChange: FileChange): Promise<void> => {
+async function updateFile(
+  fileChange: FileChange,
+  vscode: VSCodeWrite
+): Promise<void> {
   try {
-    await vscode.workspace.fs.writeFile(
-      getUri(fileChange.path),
+    vscode.writeFile(
+      vscode.getUri(fileChange.path),
       Buffer.from(fileChange.content)
     );
   } catch (error) {
@@ -45,8 +58,4 @@ const updateFile = async (fileChange: FileChange): Promise<void> => {
       error
     );
   }
-};
-
-const getUri = (path: string): vscode.Uri => {
-  return vscode.Uri.file(path);
-};
+}
