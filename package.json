@@ -89,6 +89,7 @@
     "webpack-cli": "^4.4.0"
   },
   "dependencies": {
-    "angular-html-parser": "^1.8.0"
+    "angular-html-parser": "^1.8.0",
+    "recast": "^0.20.4"
   }
 }
