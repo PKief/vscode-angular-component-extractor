@@ -27,7 +27,7 @@ export class TSComponentHandler {
     return print(this.ast);
   }
 
-  addInput(key: string, _type: string): TSComponentHandler {
+  addInput(key: string): TSComponentHandler {
     const classProp = classProperty(
       identifier(key),
       undefined,

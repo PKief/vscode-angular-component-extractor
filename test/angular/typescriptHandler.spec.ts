@@ -17,7 +17,7 @@ export class TestComponent implements OnInit {
   }
 }
     `);
-    const code = tsHandler.addInput("test", "any").print().code;
+    const code = tsHandler.addInput("test").print().code;
     expectCodeMatch(
       code,
       `@Input()
