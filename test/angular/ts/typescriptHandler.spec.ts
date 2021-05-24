@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { TSComponentHandler } from "../../src/angular";
-import { expectCodeMatch, removeLineBreaksAndSpaces } from "../utils";
+import { TSComponentHandler } from "../../../src/angular";
+import { expectCodeMatch, removeLineBreaksAndSpaces } from "../../utils";
 
 describe("Angular typescript handler", () => {
   it("find component", () => {
