@@ -15,7 +15,7 @@ interface ImportStatement {
 }
 
 /**
- * Respobsible for the imports
+ * Responsible for the imports
  */
 export class TSImportHandler {
   private containsImport: ImportStatement[];
@@ -32,7 +32,7 @@ export class TSImportHandler {
 
   /**
    * Check if the import already is present
-   * @param imp what sould be imported
+   * @param imp what should be imported
    * @param pkg from which package
    * @returns
    */
