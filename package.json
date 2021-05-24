@@ -39,15 +39,26 @@
       }
     }
   },
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.spec.ts",
+    "require": "ts-node/register",
+    "watch-files": [
+      "src/**/*.ts",
+      "test/**/*.spec.ts"
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "lint": "eslint src e2e test --ext ts",
-    "test": "npm un test:unit && npm run test:e2e",
-    "test:unit": "nyc mocha -r ts-node/register 'test/**/*.ts'",
-    "test:watch": "tsc -watch -p ./",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "nyc mocha",
+    "test:unit:watch": "npm run test:unit -- -w",
     "pretest:e2e": "npm run test:e2e:compile",
     "test:e2e": "node ./out/e2e/runTest.js",
     "test:e2e:compile": "tsc -p ./"
