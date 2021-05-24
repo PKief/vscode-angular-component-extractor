@@ -1,24 +1,38 @@
 import { Node, Text } from "angular-html-parser/lib/compiler/src/ml_parser/ast";
 
+export interface RegExpMatch {
+  match: string;
+  groups: string[];
+  index: number;
+}
+
 export interface TemplateLiteral {
   node: Text;
-  matches: RegExpExecArray;
+  matches: RegExpMatch[];
 }
 
 export function getLiterals(rootNodes: Node[]): TemplateLiteral[] {
-  const literalMatcher = /\{\{(.*)\}\}/g;
+  const literalMatcher = /\{\{(.*?)\}\}/g;
   return flatDeep(rootNodes)
     .filter(textNodeGuard)
-    .map((node) => ({ node, matches: literalMatcher.exec(node.value) }))
-    .filter(matchesIsNotNull)
+    .map((node) => ({ node, matches: findMatches(node.value, literalMatcher) }))
     .filter((tempLiteral) => tempLiteral.matches.length > 0);
 }
 
-function matchesIsNotNull(tempLiteral: {
-  node: Text;
-  matches: RegExpExecArray | null;
-}): tempLiteral is TemplateLiteral {
-  return tempLiteral.matches !== null;
+function findMatches(context: string, regex: RegExp): RegExpMatch[] {
+  const results: RegExpMatch[] = [];
+  let currentMatch = regex.exec(context);
+  while (currentMatch !== null) {
+    const { index } = currentMatch;
+    const [match, ...groups] = currentMatch;
+    results.push({
+      groups,
+      index,
+      match,
+    });
+    currentMatch = regex.exec(context);
+  }
+  return results;
 }
 
 function textNodeGuard(node: Node): node is Text {
