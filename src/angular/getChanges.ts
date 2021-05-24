@@ -16,7 +16,6 @@ export interface Input {
  */
 export const getChanges = (input: Input): Changes => {
   const { rootNodes, errors } = ngHtmlParser.parse(input.selectedText);
-  console.log(rootNodes, errors);
   return {
     originTemplateReplacement: getReplacement(input),
     files: [getComponentTemplateChange(input)],
