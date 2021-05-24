@@ -2,7 +2,7 @@ import * as ngHtmlParser from "angular-html-parser";
 import * as path from "path";
 import { Changes, Config, FileChange } from "../types";
 import { getLiterals, TemplateLiteral } from "./angularTemplateHandler";
-import { TSComponentHandler } from "./typescriptHandler";
+import { TSComponentHandler } from ".";
 
 export interface Input {
   directory: string;
@@ -82,7 +82,7 @@ const getComponentTypeScriptChange = (
     newContent: (content: string) => {
       const tsHandler = new TSComponentHandler(content);
       literals.forEach((literal) => tsHandler.addInput(literal.text));
-      return tsHandler.print().code;
+      return tsHandler.stringify();
     },
     path: path.join(directory, componentName, `${componentName}.component.ts`),
     type: "update",
