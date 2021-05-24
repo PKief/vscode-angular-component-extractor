@@ -33,7 +33,6 @@ describe("Angular template handler", () => {
       const { rootNodes } = ngParseHtml(input);
       const result = getLiterals(rootNodes);
       expect(result.length).to.equal(1);
-      console.log(result);
       const [literalOne, literalTwo] = result[0].matches;
       expect(literalOne.groups).to.deep.equal(["any value"]);
       expect(literalTwo.groups).to.deep.equal(["any other value"]);
