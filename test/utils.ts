@@ -18,6 +18,6 @@ export function expectCodeMatch(result: string, expected: string): void {
   );
 }
 
-function removeLineBreaksAndSpaces(input: string): string {
+export function removeLineBreaksAndSpaces(input: string): string {
   return input.replace(/\n+/g, "").replace(/ {2,}/g, " ");
 }

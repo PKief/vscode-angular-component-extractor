@@ -1,5 +1,6 @@
+import { expect } from "chai";
 import { TSComponentHandler } from "../../src/angular";
-import { expectCodeMatch } from "../utils";
+import { expectCodeMatch, removeLineBreaksAndSpaces } from "../utils";
 
 describe("Angular typescript handler", () => {
   it("find component", () => {
@@ -17,11 +18,20 @@ export class TestComponent implements OnInit {
   }
 }
     `);
-    const code = tsHandler.addInput("test").print().code;
+    const code = tsHandler.addInput("test").stringify();
     expectCodeMatch(
       code,
       `@Input()
         test: any;`
     );
+    expectImportMatch(code, "Import", "@angular/core");
   });
 });
+
+function expectImportMatch(code: string, imp: string, pkg: string): void {
+  const regExpImportStatement = RegExp(
+    `import \\{.*?${imp}.*?\\} from '${pkg}'`,
+    "g"
+  );
+  expect(removeLineBreaksAndSpaces(code)).to.match(regExpImportStatement);
+}
