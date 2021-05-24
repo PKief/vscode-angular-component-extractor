@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { getChanges, Input } from "../../src/angular";
 import { Changes } from "../../src/types";
 
-describe("Angular convert", () => {
+describe("Angular getChanges", () => {
   it("static content", () => {
     const input: Input = {
       directory: "/baseDir",
