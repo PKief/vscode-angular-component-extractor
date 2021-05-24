@@ -11,7 +11,7 @@ export const generateNewComponent = (
   useNpx: boolean,
   componentName: string,
   componentDirectory: string
-) => {
+): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     const command =
       (useNpx ? "npx -p @angular/cli " : "") +

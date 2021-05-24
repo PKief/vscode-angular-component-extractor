@@ -63,7 +63,11 @@ export const getExtractCommand = async (context: vscode.ExtensionContext) => {
           message: "Replace selection",
         },
         {
-          execute: () => updateFiles(changes),
+          execute: () =>
+            updateFiles(changes, {
+              getUri: vscode.Uri.file,
+              writeFile: vscode.workspace.fs.writeFile,
+            }),
           message: "Update files",
         },
       ])
@@ -92,7 +96,7 @@ const getExtractCommandData = async (
   }
   const { document, selection } = editor;
   const selectedText = document.getText(selection);
-  const componentName = await getComponentName();
+  const componentName = await getComponentName(vscode.window.showInputBox);
 
   if (componentName === undefined) {
     return;
