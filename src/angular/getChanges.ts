@@ -1,12 +1,18 @@
 import * as ngHtmlParser from "angular-html-parser";
 import * as path from "path";
 import { Changes, Config, FileChange } from "../types";
+import { getLiterals, TemplateLiteral } from "./angularTemplateHandler";
+import { TSComponentHandler } from "./typescriptHandler";
 
 export interface Input {
   directory: string;
   componentName: string;
   selectedText: string;
   config: Config;
+}
+
+interface Literal {
+  text: string;
 }
 
 /**
@@ -16,19 +22,35 @@ export interface Input {
  */
 export const getChanges = (input: Input): Changes => {
   const { rootNodes, errors } = ngHtmlParser.parse(input.selectedText);
-  return {
-    originTemplateReplacement: getReplacement(input),
+  const literals = getLiteralsTexts(getLiterals(rootNodes));
+  const changes = {
+    originTemplateReplacement: getReplacement(input, literals),
     files: [getComponentTemplateChange(input)],
   };
+  if (literals.length > 0) {
+    changes.files.push(getComponentTypeScriptChange(input, literals));
+  }
+  return changes;
 };
 
+function getLiteralsTexts(literals: TemplateLiteral[]): Literal[] {
+  return literals.flatMap((literal) =>
+    literal.matches.map((match) => ({ text: match.groups[0] }))
+  );
+}
 /**
  * Get the replacement code of the child component's template
  * @param param0 Input parameter
  * @returns New Template code of child component
  */
-const getReplacement = ({ componentName, config }: Input): string => {
-  return `<${config.defaultPrefix}-${componentName}></${config.defaultPrefix}-${componentName}>`;
+const getReplacement = (
+  { componentName, config }: Input,
+  literals: Literal[]
+): string => {
+  const attributes = literals.reduce((acc, literal) => {
+    return `${acc} [${literal.text}]="${literal.text}"`;
+  }, "");
+  return `<${config.defaultPrefix}-${componentName}${attributes}></${config.defaultPrefix}-${componentName}>`;
 };
 
 /**
@@ -49,5 +71,20 @@ const getComponentTemplateChange = ({
       `${componentName}.component.html`
     ),
     type: "replace",
+  };
+};
+
+const getComponentTypeScriptChange = (
+  { directory, componentName }: Input,
+  literals: Literal[]
+): FileChange => {
+  return {
+    newContent: (content: string) => {
+      const tsHandler = new TSComponentHandler(content);
+      literals.forEach((literal) => tsHandler.addInput(literal.text));
+      return tsHandler.print().code;
+    },
+    path: path.join(directory, componentName, `${componentName}.component.ts`),
+    type: "update",
   };
 };
