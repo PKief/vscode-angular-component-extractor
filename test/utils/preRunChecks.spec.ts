@@ -12,11 +12,11 @@ import {
 import { stub, Stub } from "../utils";
 const tsSinon = { stubConstructor, stubInterface, stubObject };
 
-type FunctionPrarmeters = Parameters<typeof preRunChecks>;
+type FunctionParameters = Parameters<typeof preRunChecks>;
 
 describe("Utils preRunChecks", () => {
-  let getExtension: Stub<FunctionPrarmeters[1]>;
-  let getDiagnostics: Stub<FunctionPrarmeters[2]>;
+  let getExtension: Stub<FunctionParameters[1]>;
+  let getDiagnostics: Stub<FunctionParameters[2]>;
 
   before(() => {
     getExtension = sinon.stub();

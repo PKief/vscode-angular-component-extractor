@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { getChanges, Input } from "../../src/angular";
 import { Changes } from "../../src/types";
+import * as path from "path";
 
 describe("Angular getChanges", () => {
   it("static content", () => {
@@ -17,8 +18,8 @@ describe("Angular getChanges", () => {
       files: [
         {
           content: `<button>hello world</button>`,
-          path: "/baseDir/test/test.component.html",
           type: "replace",
+          path: path.join("/baseDir", "test", "test.component.html"),
         },
       ],
     };
