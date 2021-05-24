@@ -5,28 +5,47 @@ import {
   ClassDeclaration,
   classProperty,
   decorator,
-  ExportNamedDeclaration,
   File,
   identifier,
-  Statement,
   typeAnnotation,
 } from "@babel/types";
-import { PrintResultType } from "recast/lib/printer";
+import {
+  isClassDeclaration,
+  isExportNamedDeclaration,
+  notNullOrUndefined,
+  TSImportHandler,
+} from ".";
 
 export class TSComponentHandler {
   private ast: File;
   private component: ClassDeclaration;
+  private importHandler: TSImportHandler;
+
+  /**
+   *
+   * @param component TypeScript code
+   */
   constructor(component: string) {
     this.ast = parse(component, {
       parser: require("recast/parsers/typescript"),
     });
     this.component = this.findComponentReference(this.ast);
+    this.importHandler = new TSImportHandler(this.ast);
   }
 
-  print(): PrintResultType {
-    return print(this.ast);
+  /**
+   * Get TypeScript the code
+   * @returns
+   */
+  stringify(): string {
+    return print(this.ast).code;
   }
 
+  /**
+   * Add an input class property
+   * @param key The name of the Input
+   * @returns self reference
+   */
   addInput(key: string): TSComponentHandler {
     const classProp = classProperty(
       identifier(key),
@@ -35,9 +54,15 @@ export class TSComponentHandler {
       [decorator(callExpression(identifier("Input"), []))]
     );
     this.component.body.body.unshift(classProp);
+    this.importHandler.ensureThatImportExists("Input", "@angular/core");
     return this;
   }
 
+  /**
+   * find the component declaration of the passed typescript file
+   * @param ast
+   * @returns
+   */
   private findComponentReference(ast: File): ClassDeclaration {
     const classDeclarations = ast.program.body
       .filter(isExportNamedDeclaration)
@@ -52,18 +77,4 @@ export class TSComponentHandler {
     }
     return classDeclarations[0];
   }
-}
-
-function notNullOrUndefined<T>(value: T | undefined | null): value is T {
-  return value !== undefined && value !== null;
-}
-
-function isExportNamedDeclaration(
-  node: Statement
-): node is ExportNamedDeclaration {
-  return node.type === "ExportNamedDeclaration";
-}
-
-function isClassDeclaration(node: Statement): node is ClassDeclaration {
-  return node.type === "ClassDeclaration";
 }
