@@ -1,5 +1,5 @@
-import { expect } from "chai";
 import { TSComponentHandler } from "../../src/angular";
+import { expectCodeMatch } from "../utils";
 
 describe("Angular typescript handler", () => {
   it("find component", () => {
@@ -25,13 +25,3 @@ export class TestComponent implements OnInit {
     );
   });
 });
-
-function expectCodeMatch(result: string, expected: string): void {
-  expect(removeLineBreaksAndSpaces(result)).to.contain(
-    removeLineBreaksAndSpaces(expected)
-  );
-}
-
-function removeLineBreaksAndSpaces(input: string): string {
-  return input.replace(/\n+/g, "").replace(/ {2,}/g, " ");
-}
