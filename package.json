@@ -12,6 +12,14 @@
     "type": "git",
     "url": "https://github.com/PKief/vscode-angular-component-extractor.git"
   },
+  "icon": "images/logo.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "extensionDependencies": [
+    "angular.ng-template"
+  ],
   "bugs": {
     "url": "https://github.com/PKief/vscode-angular-component-extractor/issues"
   },
