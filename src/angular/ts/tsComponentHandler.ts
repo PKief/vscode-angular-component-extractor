@@ -73,7 +73,7 @@ export class TSComponentHandler {
       throw new Error("No class declaration found");
     }
     if (classDeclarations.length > 1) {
-      console.log(`In this file are more that one class declarations`);
+      console.warn(`In this file are more that one class declarations`);
     }
     return classDeclarations[0];
   }
