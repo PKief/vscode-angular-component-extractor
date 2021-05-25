@@ -33,6 +33,5 @@ function expectImportMatch(code: string, imp: string, pkg: string): void {
     `import \\{.*?${imp}.*?\\} from '${pkg}'`,
     "g"
   );
-  console.log(code);
   expect(removeLineBreaksAndSpaces(code)).to.match(regExpImportStatement);
 }
