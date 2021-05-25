@@ -14,8 +14,8 @@
   },
   "icon": "images/logo.png",
   "galleryBanner": {
-    "color": "#1e1e1e",
-    "theme": "dark"
+    "color": "#eff1f3",
+    "theme": "light"
   },
   "extensionDependencies": [
     "angular.ng-template"
