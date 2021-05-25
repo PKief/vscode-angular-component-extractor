@@ -7,6 +7,14 @@
   "engines": {
     "vscode": "^1.55.0"
   },
+  "homepage": "https://github.com/PKief/vscode-angular-component-extractor/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PKief/vscode-angular-component-extractor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PKief/vscode-angular-component-extractor/issues"
+  },
   "categories": [
     "Other"
   ],
