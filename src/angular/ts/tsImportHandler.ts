@@ -76,7 +76,7 @@ export class TSImportHandler {
    * @param pkg
    */
   private addImportDeclaration(imp: string, pkg: string): void {
-    let [existingImport] = this.getImportDeclarationByPackage(pkg).map(
+    const [existingImport] = this.getImportDeclarationByPackage(pkg).map(
       ({ source, specifiers }) => ({
         source,
         specifiers,
