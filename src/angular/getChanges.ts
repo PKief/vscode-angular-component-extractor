@@ -35,7 +35,7 @@ export const getChanges = (input: Input): Changes => {
 
 function getLiteralsTexts(literals: TemplateLiteral[]): Literal[] {
   return literals.flatMap((literal) =>
-    literal.matches.map((match) => ({ text: match.groups[0] }))
+    literal.matches.map((match) => ({ text: match.groups[0].trim() }))
   );
 }
 /**
