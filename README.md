@@ -26,3 +26,11 @@ Angular generates components with a prefix. This prefix can be customized via VS
   "angular-component-extractor.default-prefix": "app"
 }
 ```
+
+## Angular CLI
+
+The extension is using [Angular CLI](https://angular.io/cli) under the hood. If the CLI is not installed it will execute it via NPX. In general, it's recommended to install the Angular CLI on the system to get a better performance of this extension:
+
+```
+npm install -g @angular/cli
+```

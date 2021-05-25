@@ -2,7 +2,7 @@
   "name": "angular-component-extractor",
   "displayName": "angular-component-extractor",
   "description": "Helper to extract components from templates in Angular",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "PKief",
   "engines": {
     "vscode": "^1.55.0"
