@@ -19,5 +19,5 @@ export function expectCodeMatch(result: string, expected: string): void {
 }
 
 export function removeLineBreaksAndSpaces(input: string): string {
-  return input.replace(/\n+/g, "").replace(/ {2,}/g, " ");
+  return input.replace(/(\r\n?|\n)+/g, "").replace(/ {2,}/g, " ");
 }
