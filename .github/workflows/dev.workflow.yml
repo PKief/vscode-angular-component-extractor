@@ -23,7 +23,7 @@ jobs:
         shell: bash
         if: ${{ success() && matrix.os == 'ubuntu-latest' }}
       - name: Install node_modules 📦
-        run: npm ci -f
+        run: npm i -f
       - name: Test + Build 🚀
         run: |
           npm test
