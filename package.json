@@ -3,6 +3,7 @@
   "displayName": "angular-component-extractor",
   "description": "Helper to extract components from templates in Angular",
   "version": "0.0.1",
+  "publisher": "PKief",
   "engines": {
     "vscode": "^1.55.0"
   },
@@ -92,6 +93,7 @@
   },
   "dependencies": {
     "angular-html-parser": "^1.8.0",
+    "babylon": "^6.18.0",
     "recast": "^0.20.4"
   }
 }
