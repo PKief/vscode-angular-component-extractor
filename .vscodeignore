@@ -1,15 +1,12 @@
-.vscode/**
-.vscode-test/**
-out/**
-node_modules/**
-src/**
-.gitignore
-.gitattributes
-.mocharc.json
-.yarnrc
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
-**/*.map
-**/*.ts
-.nyc_output
+# Ignore everything
+*
+*/**
+
+# Whitelist what you need
+!.vscodeignore
+!dist/*
+!images/*
+!CHANGELOG.md
+!LICENSE.md
+!package.json
+!README.md
