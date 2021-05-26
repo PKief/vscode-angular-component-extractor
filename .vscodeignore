@@ -3,7 +3,6 @@
 */**
 
 # Whitelist what you need
-!.vscodeignore
 !dist/*
 !images/*
 !CHANGELOG.md
