@@ -15,7 +15,7 @@ This extension for VS Code makes it easier to split components in an Angular pro
 
 ## How to use
 
-![Preview](./images/preview.gif)
+![Preview](https://github.com/PKief/vscode-angular-component-extractor/raw/develop/images/preview.gif)
 
 ## Configuration
 
