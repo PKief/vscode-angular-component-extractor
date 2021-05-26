@@ -1,24 +1,29 @@
 {
   "name": "angular-component-extractor",
-  "displayName": "angular-component-extractor",
+  "displayName": "Angular Component Extractor",
   "description": "Helper to extract components from templates in Angular",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "preview": true,
   "publisher": "PKief",
   "engines": {
     "vscode": "^1.55.0"
-  },
-  "homepage": "https://github.com/PKief/vscode-angular-component-extractor/blob/main/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PKief/vscode-angular-component-extractor.git"
   },
   "icon": "images/logo.png",
   "galleryBanner": {
     "color": "#eff1f3",
     "theme": "light"
   },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "homepage": "https://github.com/PKief/vscode-angular-component-extractor/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PKief/vscode-angular-component-extractor.git"
+  },
   "extensionDependencies": [
     "angular.ng-template"
+  ],
+  "extensionKind": [
+    "workspace"
   ],
   "bugs": {
     "url": "https://github.com/PKief/vscode-angular-component-extractor/issues"
