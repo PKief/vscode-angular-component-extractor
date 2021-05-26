@@ -34,3 +34,7 @@ The extension is using [Angular CLI](https://angular.io/cli) under the hood. If 
 ```
 npm install -g @angular/cli
 ```
+
+## Feedback
+
+As this extension is quite new on the VS Code Marketplace it would be nice if you could leave us some feedback. In case of any issues let us know of that and [create an issue](https://github.com/PKief/vscode-angular-component-extractor/issues/new) in the repository. Further suggestions and ideas are also welcome in a [discussion](https://github.com/PKief/vscode-angular-component-extractor/discussions).
