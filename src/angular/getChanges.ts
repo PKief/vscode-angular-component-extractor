@@ -1,7 +1,10 @@
 import * as ngHtmlParser from "angular-html-parser";
 import * as path from "path";
 import { Changes, Config, FileChange } from "../types";
-import { getLiterals, TemplateLiteral } from "./angularTemplateHandler";
+import {
+  getInterpolations,
+  TemplateInterpolation,
+} from "./angularTemplateHandler";
 import { TSComponentHandler } from ".";
 
 export interface Input {
@@ -11,7 +14,7 @@ export interface Input {
   config: Config;
 }
 
-interface Literal {
+interface Interpolation {
   text: string;
 }
 
@@ -22,20 +25,22 @@ interface Literal {
  */
 export const getChanges = (input: Input): Changes => {
   const { rootNodes, errors } = ngHtmlParser.parse(input.selectedText);
-  const literals = getLiteralsTexts(getLiterals(rootNodes));
+  const interpolations = getInterpolationTexts(getInterpolations(rootNodes));
   const changes = {
-    originTemplateReplacement: getReplacement(input, literals),
+    originTemplateReplacement: getReplacement(input, interpolations),
     files: [getComponentTemplateChange(input)],
   };
-  if (literals.length > 0) {
-    changes.files.push(getComponentTypeScriptChange(input, literals));
+  if (interpolations.length > 0) {
+    changes.files.push(getComponentTypeScriptChange(input, interpolations));
   }
   return changes;
 };
 
-function getLiteralsTexts(literals: TemplateLiteral[]): Literal[] {
-  return literals.flatMap((literal) =>
-    literal.matches.map((match) => ({ text: match.groups[0].trim() }))
+function getInterpolationTexts(
+  interpolations: TemplateInterpolation[]
+): Interpolation[] {
+  return interpolations.flatMap((interpolation) =>
+    interpolation.matches.map((match) => ({ text: match.groups[0].trim() }))
   );
 }
 /**
@@ -45,10 +50,10 @@ function getLiteralsTexts(literals: TemplateLiteral[]): Literal[] {
  */
 const getReplacement = (
   { componentName, config }: Input,
-  literals: Literal[]
+  interpolations: Interpolation[]
 ): string => {
-  const attributes = literals.reduce((acc, literal) => {
-    return `${acc} [${literal.text}]="${literal.text}"`;
+  const attributes = interpolations.reduce((acc, interpolation) => {
+    return `${acc} [${interpolation.text}]="${interpolation.text}"`;
   }, "");
   return `<${config.defaultPrefix}-${componentName}${attributes}></${config.defaultPrefix}-${componentName}>`;
 };
@@ -76,12 +81,14 @@ const getComponentTemplateChange = ({
 
 const getComponentTypeScriptChange = (
   { directory, componentName }: Input,
-  literals: Literal[]
+  interpolations: Interpolation[]
 ): FileChange => {
   return {
     newContent: (content: string) => {
       const tsHandler = new TSComponentHandler(content);
-      literals.forEach((literal) => tsHandler.addInput(literal.text));
+      interpolations.forEach((interpolation) =>
+        tsHandler.addInput(interpolation.text)
+      );
       return tsHandler.stringify();
     },
     path: path.join(directory, componentName, `${componentName}.component.ts`),
