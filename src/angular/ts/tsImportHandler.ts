@@ -5,8 +5,8 @@ import {
   getSpecifierAsString,
   isImportDeclaration,
   isImportSpecifier,
+  importBuilder,
 } from "./ast";
-import { importBuilder } from "./ast/import";
 
 interface ImportStatement {
   specifier: string;
