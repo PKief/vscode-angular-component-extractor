@@ -47,7 +47,7 @@ export function isClassDeclaration(node: Statement): node is ClassDeclaration {
 }
 
 export function isImportDeclaration(
-  node: Statement
+  node: Parameters<typeof babel.isImportDeclaration>[0]
 ): node is ImportDeclaration {
   return babel.isImportDeclaration(node);
 }

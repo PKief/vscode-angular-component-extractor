@@ -1,11 +1,4 @@
-import {
-  File,
-  identifier,
-  importDeclaration,
-  ImportDeclaration,
-  importSpecifier,
-  stringLiteral,
-} from "@babel/types";
+import { File, ImportDeclaration } from "@babel/types";
 import {
   addCodeAtBeginning,
   getCode,
@@ -13,6 +6,7 @@ import {
   isImportDeclaration,
   isImportSpecifier,
 } from "./ast";
+import { importBuilder } from "./ast/import";
 
 interface ImportStatement {
   specifier: string;
@@ -81,20 +75,16 @@ export class TSImportHandler {
    * @param pkg
    */
   private addImportDeclaration(imp: string, pkg: string): void {
-    const [existingImport] = this.getImportDeclarationByPackage(pkg).map(
-      ({ source, specifiers }) => ({
-        source,
-        specifiers,
-      })
-    );
-    const impIdentifier = identifier(imp);
-    const impSpecifier = importSpecifier(impIdentifier, impIdentifier);
-    if (existingImport !== undefined) {
-      existingImport.specifiers.push(impSpecifier);
+    const [existingImport] = this.getImportDeclarationByPackage(pkg);
+    const importResult = importBuilder(existingImport)
+      .setIdentifier(imp)
+      .setPackageName(pkg)
+      .build();
+
+    if (isImportDeclaration(importResult)) {
+      addCodeAtBeginning(getCode(this.ast), importResult);
     } else {
-      const packageSource = stringLiteral(pkg);
-      const newImport = importDeclaration([impSpecifier], packageSource);
-      addCodeAtBeginning(getCode(this.ast), newImport);
+      existingImport.specifiers.push(importResult);
     }
     this.containsImport.push({ packageSource: pkg, specifier: imp });
   }
