@@ -1,13 +1,18 @@
 import {
   File,
-  Identifier,
   identifier,
   importDeclaration,
   ImportDeclaration,
   importSpecifier,
   stringLiteral,
 } from "@babel/types";
-import { isImportDeclaration, isImportSpecifier } from "./ast";
+import {
+  addCodeAtBeginning,
+  getCode,
+  getSpecifierAsString,
+  isImportDeclaration,
+  isImportSpecifier,
+} from "./ast";
 
 interface ImportStatement {
   specifier: string;
@@ -52,7 +57,7 @@ export class TSImportHandler {
       .flatMap(({ source, specifiers }) =>
         specifiers.map(
           (specifier): ImportStatement => ({
-            specifier: (specifier.imported as Identifier).name,
+            specifier: getSpecifierAsString(specifier.imported),
             packageSource: source.value,
           })
         )
@@ -65,7 +70,7 @@ export class TSImportHandler {
   }
 
   private getImportDeclarationByPackage(pkg: string): ImportDeclaration[] {
-    return this.ast.program.body
+    return getCode(this.ast)
       .filter(isImportDeclaration)
       .filter(({ source }) => source.value === pkg);
   }
@@ -89,7 +94,7 @@ export class TSImportHandler {
     } else {
       const packageSource = stringLiteral(pkg);
       const newImport = importDeclaration([impSpecifier], packageSource);
-      this.ast.program.body.unshift(newImport);
+      addCodeAtBeginning(getCode(this.ast), newImport);
     }
     this.containsImport.push({ packageSource: pkg, specifier: imp });
   }

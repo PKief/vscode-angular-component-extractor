@@ -2,10 +2,9 @@ import { parse, print } from "recast";
 import { ClassDeclaration, File } from "@babel/types";
 import { notNullOrUndefined, TSImportHandler } from ".";
 import {
-  ComponentFirstCitizenStatement,
+  addStatementToComponent,
   componentPropertyBuilder,
   getCode,
-  getComponentCode,
   isClassDeclaration,
   isExportNamedDeclaration,
 } from "./ast";
@@ -45,15 +44,9 @@ export class TSComponentHandler {
       .setKey(key)
       .setDecorator("Input")
       .build();
-    this.addStatementToComponent(classProp);
+    addStatementToComponent(this.component, classProp);
     this.importHandler.ensureThatImportExists("Input", "@angular/core");
     return this;
-  }
-
-  private addStatementToComponent(
-    statement: ComponentFirstCitizenStatement
-  ): void {
-    getComponentCode(this.component).unshift(statement);
   }
 
   /**

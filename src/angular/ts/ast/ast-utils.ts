@@ -6,11 +6,13 @@ import {
   ClassProperty,
   ExportNamedDeclaration,
   File,
+  Identifier,
   ImportDeclaration,
   ImportDefaultSpecifier,
   ImportNamespaceSpecifier,
   ImportSpecifier,
   Statement,
+  StringLiteral,
   TSDeclareMethod,
   TSIndexSignature,
 } from "@babel/types";
@@ -54,4 +56,26 @@ export function isImportSpecifier(
   node: ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
 ): node is ImportSpecifier {
   return babel.isImportSpecifier(node);
+}
+
+export function getSpecifierAsString(
+  specifier: StringLiteral | Identifier
+): string {
+  if (babel.isStringLiteral(specifier)) {
+    return specifier.value;
+  }
+  return specifier.name;
+}
+
+export function addCodeAtBeginning(
+  code: Statement[],
+  newLine: Statement
+): void {
+  code.unshift(newLine);
+}
+export function addStatementToComponent(
+  component: ClassDeclaration,
+  statement: ComponentFirstCitizenStatement
+): void {
+  getComponentCode(component).unshift(statement);
 }
