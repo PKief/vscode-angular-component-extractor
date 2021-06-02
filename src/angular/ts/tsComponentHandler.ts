@@ -1,16 +1,13 @@
 import { parse, print } from "recast";
 import { ClassDeclaration, File } from "@babel/types";
-import {
-  isClassDeclaration,
-  isExportNamedDeclaration,
-  notNullOrUndefined,
-  TSImportHandler,
-} from ".";
+import { notNullOrUndefined, TSImportHandler } from ".";
 import {
   ComponentFirstCitizenStatement,
   componentPropertyBuilder,
   getCode,
   getComponentCode,
+  isClassDeclaration,
+  isExportNamedDeclaration,
 } from "./ast";
 
 export class TSComponentHandler {

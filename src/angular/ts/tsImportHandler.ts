@@ -7,7 +7,7 @@ import {
   importSpecifier,
   stringLiteral,
 } from "@babel/types";
-import { isImportDeclaration, isImportSpecifier } from ".";
+import { isImportDeclaration, isImportSpecifier } from "./ast";
 
 interface ImportStatement {
   specifier: string;

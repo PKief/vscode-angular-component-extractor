@@ -4,7 +4,12 @@ import {
   ClassPrivateMethod,
   ClassPrivateProperty,
   ClassProperty,
+  ExportNamedDeclaration,
   File,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
   Statement,
   TSDeclareMethod,
   TSIndexSignature,
@@ -26,4 +31,26 @@ export function getComponentCode(
   component: ClassDeclaration
 ): ComponentFirstCitizenStatement[] {
   return component.body.body;
+}
+
+export function isExportNamedDeclaration(
+  node: Statement
+): node is ExportNamedDeclaration {
+  return node.type === "ExportNamedDeclaration";
+}
+
+export function isClassDeclaration(node: Statement): node is ClassDeclaration {
+  return node.type === "ClassDeclaration";
+}
+
+export function isImportDeclaration(
+  node: Statement
+): node is ImportDeclaration {
+  return node.type === "ImportDeclaration";
+}
+
+export function isImportSpecifier(
+  node: ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
+): node is ImportSpecifier {
+  return node.type === "ImportSpecifier";
 }
