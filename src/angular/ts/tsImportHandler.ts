@@ -1,13 +1,12 @@
+import { File, ImportDeclaration } from "@babel/types";
 import {
-  File,
-  Identifier,
-  identifier,
-  importDeclaration,
-  ImportDeclaration,
-  importSpecifier,
-  stringLiteral,
-} from "@babel/types";
-import { isImportDeclaration, isImportSpecifier } from ".";
+  addCodeAtBeginning,
+  getCode,
+  getSpecifierAsString,
+  isImportDeclaration,
+  isImportSpecifier,
+  importBuilder,
+} from "./ast";
 
 interface ImportStatement {
   specifier: string;
@@ -52,7 +51,7 @@ export class TSImportHandler {
       .flatMap(({ source, specifiers }) =>
         specifiers.map(
           (specifier): ImportStatement => ({
-            specifier: (specifier.imported as Identifier).name,
+            specifier: getSpecifierAsString(specifier.imported),
             packageSource: source.value,
           })
         )
@@ -65,7 +64,7 @@ export class TSImportHandler {
   }
 
   private getImportDeclarationByPackage(pkg: string): ImportDeclaration[] {
-    return this.ast.program.body
+    return getCode(this.ast)
       .filter(isImportDeclaration)
       .filter(({ source }) => source.value === pkg);
   }
@@ -76,20 +75,16 @@ export class TSImportHandler {
    * @param pkg
    */
   private addImportDeclaration(imp: string, pkg: string): void {
-    const [existingImport] = this.getImportDeclarationByPackage(pkg).map(
-      ({ source, specifiers }) => ({
-        source,
-        specifiers,
-      })
-    );
-    const impIdentifier = identifier(imp);
-    const impSpecifier = importSpecifier(impIdentifier, impIdentifier);
-    if (existingImport !== undefined) {
-      existingImport.specifiers.push(impSpecifier);
+    const [existingImport] = this.getImportDeclarationByPackage(pkg);
+    const importResult = importBuilder(existingImport)
+      .setIdentifier(imp)
+      .setPackageName(pkg)
+      .build();
+
+    if (isImportDeclaration(importResult)) {
+      addCodeAtBeginning(getCode(this.ast), importResult);
     } else {
-      const packageSource = stringLiteral(pkg);
-      const newImport = importDeclaration([impSpecifier], packageSource);
-      this.ast.program.body.unshift(newImport);
+      existingImport.specifiers.push(importResult);
     }
     this.containsImport.push({ packageSource: pkg, specifier: imp });
   }
