@@ -1,20 +1,17 @@
 import { parse, print } from "recast";
-import {
-  anyTypeAnnotation,
-  callExpression,
-  ClassDeclaration,
-  classProperty,
-  decorator,
-  File,
-  identifier,
-  typeAnnotation,
-} from "@babel/types";
+import { ClassDeclaration, File } from "@babel/types";
 import {
   isClassDeclaration,
   isExportNamedDeclaration,
   notNullOrUndefined,
   TSImportHandler,
 } from ".";
+import {
+  ComponentFirstCitizenStatement,
+  componentPropertyBuilder,
+  getCode,
+  getComponentCode,
+} from "./ast";
 
 export class TSComponentHandler {
   private ast: File;
@@ -47,15 +44,19 @@ export class TSComponentHandler {
    * @returns self reference
    */
   addInput(key: string): TSComponentHandler {
-    const classProp = classProperty(
-      identifier(key),
-      undefined,
-      typeAnnotation(anyTypeAnnotation()),
-      [decorator(callExpression(identifier("Input"), []))]
-    );
-    this.component.body.body.unshift(classProp);
+    const classProp = componentPropertyBuilder()
+      .setKey(key)
+      .setDecorator("Input")
+      .build();
+    this.addStatementToComponent(classProp);
     this.importHandler.ensureThatImportExists("Input", "@angular/core");
     return this;
+  }
+
+  private addStatementToComponent(
+    statement: ComponentFirstCitizenStatement
+  ): void {
+    getComponentCode(this.component).unshift(statement);
   }
 
   /**
@@ -64,11 +65,12 @@ export class TSComponentHandler {
    * @returns
    */
   private findComponentReference(ast: File): ClassDeclaration {
-    const classDeclarations = ast.program.body
+    const classDeclarations = getCode(ast)
       .filter(isExportNamedDeclaration)
       .map((node) => node.declaration)
       .filter(notNullOrUndefined)
       .filter(isClassDeclaration);
+
     if (classDeclarations.length === 0) {
       throw new Error("No class declaration found");
     }
