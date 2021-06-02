@@ -14,6 +14,7 @@ import {
   TSDeclareMethod,
   TSIndexSignature,
 } from "@babel/types";
+import * as babel from "@babel/types";
 
 export type ComponentFirstCitizenStatement =
   | ClassMethod
@@ -36,21 +37,21 @@ export function getComponentCode(
 export function isExportNamedDeclaration(
   node: Statement
 ): node is ExportNamedDeclaration {
-  return node.type === "ExportNamedDeclaration";
+  return babel.isExportNamedDeclaration(node);
 }
 
 export function isClassDeclaration(node: Statement): node is ClassDeclaration {
-  return node.type === "ClassDeclaration";
+  return babel.isClassDeclaration(node);
 }
 
 export function isImportDeclaration(
   node: Statement
 ): node is ImportDeclaration {
-  return node.type === "ImportDeclaration";
+  return babel.isImportDeclaration(node);
 }
 
 export function isImportSpecifier(
   node: ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
 ): node is ImportSpecifier {
-  return node.type === "ImportSpecifier";
+  return babel.isImportSpecifier(node);
 }
