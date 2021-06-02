@@ -46,7 +46,7 @@ export function importBuilder(
 
       const impIdentifier = identifier(importData.identifier);
       const impSpecifier = importSpecifier(impIdentifier, impIdentifier);
-      if (existingImport === undefined) {
+      if (existingImport !== undefined) {
         return impSpecifier;
       }
       const packageSource = stringLiteral(importData.packageName);
