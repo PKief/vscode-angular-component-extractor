@@ -30,7 +30,7 @@ describe("Angular getChanges", () => {
     const result = getChanges(input);
     expect(result).to.deep.equal(expectedOutput);
   });
-  it("static content with one template literal", () => {
+  it("static content with one template interpolation", () => {
     const input: Input = {
       directory: "/baseDir",
       componentName: "test",
