@@ -38,4 +38,5 @@ export namespace VSCodeAbstraction {
   export type WriteFile = typeof vscode.workspace.fs.writeFile;
   export type ReadFile = typeof vscode.workspace.fs.readFile;
   export type GetUri = typeof vscode.Uri.file;
+  export type OnDidChangeConfiguration = typeof vscode.workspace.onDidChangeConfiguration;
 }

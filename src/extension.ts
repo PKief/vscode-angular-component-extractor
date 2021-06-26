@@ -1,8 +1,11 @@
 import * as vscode from "vscode";
 import { getExtractCommand } from "./commands";
+import { initLogger } from "./utils/logger";
 
 export const activate = (context: vscode.ExtensionContext) => {
-  console.log(
+  const logger = initLogger(context, vscode.workspace.onDidChangeConfiguration);
+
+  logger.info(
     'Congratulations, your extension "angular-component-extractor" is now active!'
   );
 

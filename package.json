@@ -57,6 +57,27 @@
           "type": "string",
           "default": "app",
           "description": "Prefix of an Angular component"
+        },
+        "angular-component-extractor.log-level": {
+          "type": "string",
+          "enum": [
+            "off",
+            "fatal",
+            "error",
+            "warn",
+            "info",
+            "debug",
+            "trace"
+          ],
+          "default": "warn",
+          "description": "The verbosity of logging. The Order is off < fatal < error < warn < info < debug < trace.",
+          "scope": "resource"
+        },
+        "angular-component-extractor.source-location-logging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Should Source Code Location Info be added to log entries, DANGER - May be very slow, only use in debugging scenarios",
+          "scope": "resource"
         }
       }
     }
@@ -102,6 +123,7 @@
     "webpack-cli": "^4.4.0"
   },
   "dependencies": {
+    "@vscode-logging/logger": "^1.2.3",
     "angular-html-parser": "^1.8.0",
     "babylon": "^6.18.0",
     "recast": "^0.20.4"
