@@ -1,4 +1,5 @@
 import { exec, ExecException } from "child_process";
+import { getLogger } from "../utils/logger";
 
 /**
  * Generate a new Angular component
@@ -13,19 +14,24 @@ export const generateNewComponent = (
   componentDirectory: string
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
+    const logger = getLogger().getChildLogger({
+      label: "generateNewComponent",
+    });
+
     const command =
       (useNpx ? "npx -p @angular/cli " : "") +
       `ng generate component ${componentName}`;
 
+    logger.debug(`execute the following command: ${command}`);
     exec(
       command,
       { cwd: componentDirectory },
       (err: ExecException | null, stdout: string, stderr: string) => {
-        console.log("stdout: " + stdout);
-        console.log(stderr);
+        logger.info("stdout: " + stdout);
+        logger.info(stderr);
 
         if (err) {
-          console.error("error: " + err);
+          logger.fatal("error: " + err);
           reject(err);
         }
 
