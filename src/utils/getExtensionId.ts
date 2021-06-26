@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as vscode from "vscode";
+import { ExtensionContext } from "vscode";
 
 let firstTime = true;
 let extensionId: string | undefined;
@@ -10,9 +10,7 @@ let extensionName: string | undefined;
  * Load the extension id of the package json file
  * @param context Context of VS Code extension
  */
-export function getExtensionId(
-  context: vscode.ExtensionContext
-): string | undefined {
+export function getExtensionId(context: ExtensionContext): string | undefined {
   readPackageFile(context.extensionPath);
   return extensionId;
 }
@@ -22,7 +20,7 @@ export function getExtensionId(
  * @param context Context of VS Code extension
  */
 export function getExtensionName(
-  context: vscode.ExtensionContext
+  context: ExtensionContext
 ): string | undefined {
   readPackageFile(context.extensionPath);
   return extensionName;

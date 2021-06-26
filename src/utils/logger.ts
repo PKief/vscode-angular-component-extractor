@@ -1,6 +1,6 @@
 import { getExtensionLogger, IVSCodeExtLogger } from "@vscode-logging/logger";
-import { ExtensionContext, window } from "vscode";
-import { getConfig } from "../config";
+import { ExtensionContext } from "vscode";
+import { getConfig as internalGetConfig } from "../config";
 import { VSCodeAbstraction } from "../types";
 import { getExtensionId, getExtensionName } from "./getExtensionId";
 
@@ -15,7 +15,9 @@ export function getLogger(): IVSCodeExtLogger {
 
 export function initLogger(
   context: ExtensionContext,
-  onDidChangeConfiguration: VSCodeAbstraction.OnDidChangeConfiguration
+  onDidChangeConfiguration: VSCodeAbstraction.OnDidChangeConfiguration,
+  createOutputChannel: VSCodeAbstraction.CreateOutputChannel,
+  getConfig: typeof internalGetConfig
 ): IVSCodeExtLogger {
   const extensionId = getExtensionId(context);
   const extensionName = getExtensionName(context);
@@ -29,13 +31,18 @@ export function initLogger(
     extensionId,
     "source-location-logging"
   );
-  listenToLogSettingsChanges(context, onDidChangeConfiguration, extensionId);
+  listenToLogSettingsChanges(
+    context,
+    onDidChangeConfiguration,
+    extensionId,
+    getConfig
+  );
   return (_logger = getExtensionLogger({
     extName: extensionId,
     level: logLevel,
     sourceLocationTracking: sourceLocationLogging,
     logPath: context.logUri.toString(),
-    logOutputChannel: window.createOutputChannel(extensionName),
+    logOutputChannel: createOutputChannel(extensionName),
     logConsole: true,
   }));
 }
@@ -43,7 +50,8 @@ export function initLogger(
 function listenToLogSettingsChanges(
   context: ExtensionContext,
   onDidChangeConfiguration: VSCodeAbstraction.OnDidChangeConfiguration,
-  extensionId: string
+  extensionId: string,
+  getConfig: typeof internalGetConfig
 ) {
   // To enable dynamic logging level we must listen to VSCode configuration changes
   // on our `loggingLevelConfigProp` configuration setting.
