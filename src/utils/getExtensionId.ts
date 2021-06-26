@@ -9,9 +9,9 @@ let extensionId: string | undefined;
  * Load the extension id of the package json file
  * @param context Context of VS Code extension
  */
-export const getExtensionId = (
+export function getExtensionId(
   context: vscode.ExtensionContext
-): string | undefined => {
+): string | undefined {
   if (!firstTime) {
     return extensionId;
   }
@@ -23,4 +23,4 @@ export const getExtensionId = (
     return undefined;
   }
   return (extensionId = packageFile.name);
-};
+}
