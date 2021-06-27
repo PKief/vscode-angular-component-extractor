@@ -24,6 +24,7 @@ describe("Utils preRunChecks", () => {
     expect(preRunChecks(undefined, getExtension, getDiagnostics)).to.equal(
       undefined
     );
+    expect(logger.error.called).to.be.true;
   });
 
   it("should not succeed if the Angular Language Server is missing", () => {
@@ -34,6 +35,7 @@ describe("Utils preRunChecks", () => {
         getDiagnostics
       )
     ).to.equal(undefined);
+    expect(logger.error.called).to.be.true;
   });
 
   it("should not succeed if there are compilation errors within the document", () => {
@@ -53,6 +55,7 @@ describe("Utils preRunChecks", () => {
         getDiagnostics.returns([createDiagnostic()])
       )
     ).to.equal(undefined);
+    expect(logger.error.called).to.be.true;
   });
 
   it("should succeed if conditions are met", () => {
@@ -68,4 +71,5 @@ describe("Utils preRunChecks", () => {
       )
     ).to.deep.equal(input);
   });
+  expect(logger.error.called).to.be.false;
 });
