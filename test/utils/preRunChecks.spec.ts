@@ -9,23 +9,16 @@ import {
   TextDocument,
   TextEditor,
 } from "vscode";
-import { stub, Stub } from "../utils";
+import { setupSandbox, stub, Stub, stubLogger } from "../utils";
 const tsSinon = { stubConstructor, stubInterface, stubObject };
 
 type FunctionParameters = Parameters<typeof preRunChecks>;
 
 describe("Utils preRunChecks", () => {
-  let getExtension: Stub<FunctionParameters[1]>;
-  let getDiagnostics: Stub<FunctionParameters[2]>;
-
-  before(() => {
-    getExtension = sinon.stub();
-    getDiagnostics = sinon.stub();
-  });
-
-  afterEach(() => {
-    sinon.restore();
-  });
+  const getExtension: Stub<FunctionParameters[1]> = sinon.stub();
+  const getDiagnostics: Stub<FunctionParameters[2]> = sinon.stub();
+  const logger = stubLogger();
+  setupSandbox();
 
   it("should not succeed with an undefined editor", () => {
     expect(preRunChecks(undefined, getExtension, getDiagnostics)).to.equal(
