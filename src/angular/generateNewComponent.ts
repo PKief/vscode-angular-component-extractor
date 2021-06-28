@@ -28,7 +28,9 @@ export const generateNewComponent = (
       { cwd: componentDirectory },
       (err: ExecException | null, stdout: string, stderr: string) => {
         logger.info("stdout: " + stdout);
-        logger.info(stderr);
+        if (stderr) {
+          logger.error(stderr);
+        }
 
         if (err) {
           logger.fatal("error: " + err);
