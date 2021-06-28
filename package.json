@@ -94,7 +94,8 @@
     "test:unit:watch": "npm run test:unit -- -w",
     "pretest:e2e": "npm run test:e2e:compile",
     "test:e2e": "node ./out/e2e/runTest.js",
-    "test:e2e:compile": "tsc -p ./"
+    "test:e2e:compile": "tsc -p ./",
+    "preinstall": "node ./tools/npm/check-npm.js"
   },
   "devDependencies": {
     "@babel/types": "^7.14.2",
