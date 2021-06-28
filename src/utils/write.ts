@@ -1,5 +1,6 @@
 import { Selection, TextEditor, Uri } from "vscode";
 import { Changes, FileChange, VSCodeAbstraction } from "../types";
+import { getLogger } from "./logger";
 
 export interface VSCodeWrite {
   writeFile: VSCodeAbstraction.WriteFile;
@@ -34,7 +35,13 @@ export const replaceSelection = async (
   selection: Selection,
   changes: Changes
 ) => {
+  const logger = getLogger().getChildLogger({ label: "write" });
   return await editor.edit((editBuilder) => {
+    logger.info("Replace selection");
+    logger.debug(
+      `Replace selection (${selection}) with: `,
+      changes.originTemplateReplacement
+    );
     editBuilder.replace(selection, changes.originTemplateReplacement);
   });
 };
@@ -48,13 +55,16 @@ async function updateFile(
   fileChange: FileChange,
   vscode: VSCodeWrite
 ): Promise<void> {
+  const logger = getLogger().getChildLogger({ label: "write" });
   try {
     const path = vscode.getUri(fileChange.path);
     const content = await getContent(fileChange, path, vscode);
+    logger.info(`Update file ${path}`);
+    logger.debug(`Update file ${path} with the content: `, content);
     await vscode.writeFile(path, Buffer.from(content));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(
+    logger.error(
       `Error while writing to the file ${fileChange.path}: ${message}`,
       fileChange,
       error
@@ -67,10 +77,18 @@ async function getContent(
   path: Uri,
   vscode: VSCodeWrite
 ): Promise<string> {
+  const logger = getLogger().getChildLogger({ label: "write" });
+  logger.trace(
+    `FileChange is of type '${fileChange.type}' for the file '${path}'`
+  );
   if (fileChange.type === "update") {
     return vscode
       .readFile(path)
       .then((buffer) => buffer.toString())
+      .then((currentContent) => {
+        logger.trace("Current content of the file: ", currentContent);
+        return currentContent;
+      })
       .then((currentContent) => fileChange.newContent(currentContent));
   }
   return fileChange.content;

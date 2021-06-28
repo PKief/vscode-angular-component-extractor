@@ -8,6 +8,7 @@ import {
   isClassDeclaration,
   isExportNamedDeclaration,
 } from "./ast";
+import { getLogger } from "../../utils/logger";
 
 export class TSComponentHandler {
   private ast: File;
@@ -65,7 +66,9 @@ export class TSComponentHandler {
       throw new Error("No class declaration found");
     }
     if (classDeclarations.length > 1) {
-      console.warn(`In this file are more that one class declarations`);
+      getLogger()
+        .getChildLogger({ label: "typescript" })
+        .warn(`In this file are more that one class declarations`);
     }
     return classDeclarations[0];
   }

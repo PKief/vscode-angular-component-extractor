@@ -15,6 +15,7 @@ import {
   startProgress,
   updateFiles,
 } from "../utils";
+import { getLogger } from "../utils/logger";
 
 interface ExtractCommandData {
   changes: Changes;
@@ -31,6 +32,7 @@ interface ExtractCommandData {
  * @returns Function which will be called when the command is executed
  */
 export const getExtractCommand = async (context: vscode.ExtensionContext) => {
+  const logger = getLogger();
   const commandData = await getExtractCommandData(context);
   if (commandData === undefined) {
     return;
@@ -74,7 +76,7 @@ export const getExtractCommand = async (context: vscode.ExtensionContext) => {
       ])
     );
   } catch (error) {
-    console.error(error);
+    logger.error(`Could not finish extracting the component because: ${error}`);
     vscode.window.showErrorMessage(error);
   }
 };
@@ -87,6 +89,7 @@ export const getExtractCommand = async (context: vscode.ExtensionContext) => {
 const getExtractCommandData = async (
   context: vscode.ExtensionContext
 ): Promise<ExtractCommandData | undefined> => {
+  const logger = getLogger();
   const editor = preRunChecks(
     vscode.window.activeTextEditor,
     vscode.extensions.getExtension,
@@ -100,14 +103,18 @@ const getExtractCommandData = async (
   const componentName = await getComponentName(vscode.window.showInputBox);
 
   if (componentName === undefined) {
+    const message =
+      "No component name was provided, so the extraction is canceled";
+    logger.error(message);
+    vscode.window.showErrorMessage(message);
     return;
   }
 
   const componentDirectory = getDirectoryName(document);
   if (componentDirectory === undefined) {
-    vscode.window.showErrorMessage(
-      `Could not find directory to generate component ${componentName}`
-    );
+    const message = `Could not find directory to generate component ${componentName}`;
+    logger.error(message);
+    vscode.window.showErrorMessage(message);
     return;
   }
 
@@ -117,14 +124,10 @@ const getExtractCommandData = async (
 
   const extensionId = getExtensionId(context);
   if (extensionId === undefined) {
-    console.error("Could not find extension id");
+    logger.error("Could not find extension id");
     return;
   }
-  const defaultPrefix = getConfig<string>(extensionId, "default-prefix");
-  if (defaultPrefix === undefined) {
-    console.error("Could not find default prefix");
-    return;
-  }
+  const defaultPrefix = getConfig(extensionId, "default-prefix");
 
   const changes = getChanges({
     componentName,

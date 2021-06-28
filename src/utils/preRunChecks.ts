@@ -1,4 +1,5 @@
 import { Diagnostic, Extension, TextEditor, Uri } from "vscode";
+import { getLogger } from "./logger";
 
 export const preRunChecks = <
   T extends Pick<TextEditor, "document" | "selection">
@@ -7,14 +8,15 @@ export const preRunChecks = <
   getExtension: (extensionId: string) => Extension<any> | undefined,
   getDiagnostics: (resource: Uri) => Diagnostic[]
 ): T | undefined => {
+  const logger = getLogger();
   if (editor === undefined) {
-    console.error("no active editor");
+    logger.error("No active editor");
     return undefined;
   }
 
   const angularTsc = getExtension("angular.ng-template");
   if (angularTsc === undefined) {
-    console.error("Angular Language Service is required for this extension");
+    logger.error("Angular Language Service is required for this extension");
     return undefined;
   }
 
@@ -23,7 +25,7 @@ export const preRunChecks = <
     (diagnostic) => diagnostic.range.intersection(selection) !== undefined
   );
   if (errorsWithinSelection.length > 0) {
-    console.error(
+    logger.error(
       "Could not extract a component, because there are errors within the html",
       errorsWithinSelection
     );
