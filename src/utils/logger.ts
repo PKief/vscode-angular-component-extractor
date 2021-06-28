@@ -4,13 +4,13 @@ import { getConfig as internalGetConfig } from "../config";
 import { VSCodeAbstraction } from "../types";
 import { getExtensionId, getExtensionName } from "./getExtensionId";
 
-let _logger: IVSCodeExtLogger;
+let logger: IVSCodeExtLogger;
 
 export function getLogger(): IVSCodeExtLogger {
-  if (_logger === undefined) {
+  if (logger === undefined) {
     throw new Error("Logger not yet defined");
   }
-  return _logger;
+  return logger;
 }
 
 export function initLogger(
@@ -37,7 +37,7 @@ export function initLogger(
     extensionId,
     getConfig
   );
-  return (_logger = getExtensionLogger({
+  return (logger = getExtensionLogger({
     extName: extensionId,
     level: logLevel,
     sourceLocationTracking: sourceLocationLogging,
