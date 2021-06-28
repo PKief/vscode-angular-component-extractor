@@ -1,20 +1,14 @@
 import { parse, print } from "recast";
+import { ClassDeclaration, File } from "@babel/types";
+import { notNullOrUndefined, TSImportHandler } from ".";
 import {
-  anyTypeAnnotation,
-  callExpression,
-  ClassDeclaration,
-  classProperty,
-  decorator,
-  File,
-  identifier,
-  typeAnnotation,
-} from "@babel/types";
-import {
+  addStatementToComponent,
+  componentPropertyBuilder,
+  getCode,
   isClassDeclaration,
   isExportNamedDeclaration,
-  notNullOrUndefined,
-  TSImportHandler,
-} from ".";
+} from "./ast";
+import { getLogger } from "../../utils/logger";
 
 export class TSComponentHandler {
   private ast: File;
@@ -47,13 +41,11 @@ export class TSComponentHandler {
    * @returns self reference
    */
   addInput(key: string): TSComponentHandler {
-    const classProp = classProperty(
-      identifier(key),
-      undefined,
-      typeAnnotation(anyTypeAnnotation()),
-      [decorator(callExpression(identifier("Input"), []))]
-    );
-    this.component.body.body.unshift(classProp);
+    const classProp = componentPropertyBuilder()
+      .setKey(key)
+      .setDecorator("Input")
+      .build();
+    addStatementToComponent(this.component, classProp);
     this.importHandler.ensureThatImportExists("Input", "@angular/core");
     return this;
   }
@@ -64,16 +56,19 @@ export class TSComponentHandler {
    * @returns
    */
   private findComponentReference(ast: File): ClassDeclaration {
-    const classDeclarations = ast.program.body
+    const classDeclarations = getCode(ast)
       .filter(isExportNamedDeclaration)
       .map((node) => node.declaration)
       .filter(notNullOrUndefined)
       .filter(isClassDeclaration);
+
     if (classDeclarations.length === 0) {
       throw new Error("No class declaration found");
     }
     if (classDeclarations.length > 1) {
-      console.warn(`In this file are more that one class declarations`);
+      getLogger()
+        .getChildLogger({ label: "typescript" })
+        .warn(`In this file are more that one class declarations`);
     }
     return classDeclarations[0];
   }
