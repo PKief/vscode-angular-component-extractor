@@ -41,7 +41,7 @@ export function initLogger(
     extName: extensionId,
     level: logLevel,
     sourceLocationTracking: sourceLocationLogging,
-    logPath: context.logUri.toString(),
+    logPath: context.logUri.fsPath,
     logOutputChannel: createOutputChannel(extensionName),
     logConsole: true,
   }));
