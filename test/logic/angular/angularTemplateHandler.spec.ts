@@ -1,6 +1,6 @@
 import { parse as ngParseHtml } from "angular-html-parser";
 import { expect } from "chai";
-import { getInterpolations } from "../../src/logic/angular/angularTemplateHandler";
+import { getInterpolations } from "../../../src/logic/angular";
 describe("Angular template handler", () => {
   describe("getInterpolations", () => {
     it("should not find any interpolations if there are non", () => {
