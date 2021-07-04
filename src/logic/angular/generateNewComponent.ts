@@ -1,5 +1,5 @@
 import { exec, ExecException } from "child_process";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../../utils/logger";
 
 /**
  * Generate a new Angular component

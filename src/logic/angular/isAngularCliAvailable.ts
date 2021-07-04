@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import * as vscode from "vscode";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../../utils/logger";
 
 /**
  * Check availability of Angular CLI on the command line

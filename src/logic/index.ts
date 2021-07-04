@@ -1,3 +1,3 @@
-export * from "./generateNewComponent";
+export * from "./angular/generateNewComponent";
 export * from "./getChanges";
-export * from "./isAngularCliAvailable";
+export * from "./angular/isAngularCliAvailable";

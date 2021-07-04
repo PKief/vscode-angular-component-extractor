@@ -1,11 +1,8 @@
 import * as ngHtmlParser from "angular-html-parser";
 import * as path from "path";
 import { Changes, Config, FileChange } from "../types";
-import {
-  getInterpolations,
-  TemplateInterpolation,
-} from "./angularTemplateHandler";
-import { TSComponentHandler } from ".";
+import { getInterpolations, TemplateInterpolation } from "./angular";
+import { TSComponentHandler } from "./ts";
 
 export interface Input {
   directory: string;
