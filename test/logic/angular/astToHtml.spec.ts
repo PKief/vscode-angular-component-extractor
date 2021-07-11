@@ -1,6 +1,6 @@
 import { parse as ngParseHtml } from "angular-html-parser";
 import { expect } from "chai";
-import { astToHtml } from "../../src/angular/astToHtml";
+import { astToHtml } from "../../../src/logic/angular";
 
 describe("Angular astToHtml", () => {
   const testParser = (input: string) => {

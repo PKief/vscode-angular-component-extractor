@@ -3,7 +3,7 @@ import {
   generateNewComponent,
   getChanges,
   isAngularCliAvailable,
-} from "../angular";
+} from "../logic";
 import { getConfig } from "../config";
 import { Changes } from "../types";
 import {

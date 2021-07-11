@@ -1,5 +1,5 @@
 import { expect, use as chaiUse } from "chai";
-import { getChanges, Input } from "../../src/angular";
+import { getChanges, Input } from "../../src/logic";
 import { Changes, FileChange, FileChangeUpdate } from "../../src/types";
 import * as path from "path";
 import chaiExclude from "chai-exclude";
