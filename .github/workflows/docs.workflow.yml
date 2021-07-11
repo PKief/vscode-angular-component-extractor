@@ -3,11 +3,10 @@ name: Documentation
 on:
   # Trigger the workflow on push,
   # but only for the main and develop branches
-  # push:
-  #   branches:
-  #     - main
-  #     - develop
-  push
+  push:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
