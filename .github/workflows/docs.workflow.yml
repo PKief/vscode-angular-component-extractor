@@ -3,10 +3,11 @@ name: Documentation
 on:
   # Trigger the workflow on push,
   # but only for the main and develop branches
-  push:
-    branches:
-      - main
-      - develop
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
+  push
 
 jobs:
   build:
@@ -15,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Upload Documentation to Wiki
-        uses: SwiftDocOrg/github-wiki-publish-action@v1
+        uses: SwiftDocOrg/github-wiki-publish-action@rsync
         with:
           path: "doc"
         env:
